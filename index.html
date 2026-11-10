@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cross-curriculum subject workshop, UWE Bristol</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a working board. The brief so far sits on top, then stacked drop-downs, each holding comparable option cards. */
+:root{
+  --water:#0f4c5c; --water-soft:#d7e7ea; --ink:#16282e; --muted:#566a71; --paper:#f6f8f8; --card:#ffffff; --line:#d3dde0;
+  --lead:#1f7a4d; --lead-soft:#d3ecdd; --maybe:#b7791f; --maybe-soft:#f7e8c9; --off:#a3adb1; --off-soft:#e6eaeb; --alert:#b3372c; --on-solid:#ffffff;
+  --k-a:#6b8791; --k-t:#0f4c5c; --k-b:#c9d4d8; --k-s:#1f7a4d; --k-p:#b7791f;
+  --display:"Barlow Condensed","Arial Narrow",Arial,sans-serif; --body:"Source Sans 3","Segoe UI",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  color-scheme:dark; --water:#7cc4d4; --water-soft:#1c3a42; --ink:#e4edef; --muted:#9db0b6; --paper:#10191c; --card:#18242a; --line:#2f4047;
+  --lead:#55c08a; --lead-soft:#17402d; --maybe:#e4b25a; --maybe-soft:#4a3814; --off:#66767c; --off-soft:#232f34; --alert:#f08a7e; --on-solid:#10191c;
+  --k-a:#7f99a3; --k-t:#7cc4d4; --k-b:#3a4b52; --k-s:#55c08a; --k-p:#e4b25a;
+}}
+:root[data-theme="dark"]{
+  color-scheme:dark; --water:#7cc4d4; --water-soft:#1c3a42; --ink:#e4edef; --muted:#9db0b6; --paper:#10191c; --card:#18242a; --line:#2f4047;
+  --lead:#55c08a; --lead-soft:#17402d; --maybe:#e4b25a; --maybe-soft:#4a3814; --off:#66767c; --off-soft:#232f34; --alert:#f08a7e; --on-solid:#10191c;
+  --k-a:#7f99a3; --k-t:#7cc4d4; --k-b:#3a4b52; --k-s:#55c08a; --k-p:#e4b25a;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font:16px/1.45 var(--body);font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 20px 48px;display:flex;flex-direction:column;gap:16px}
+h1,h2,h3{font-family:var(--display);font-weight:600;margin:0;line-height:1.1;text-wrap:balance}
+h1{font-size:34px} h2{font-size:23px} h3{font-size:18px}
+p{margin:0}
+a{color:var(--water)}
+.muted{color:var(--muted)} .small{font-size:14px}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--water);outline-offset:2px}
+header{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;justify-content:space-between}
+.seg{display:inline-flex;border:1px solid var(--water);border-radius:6px;overflow:hidden}
+.seg button{border:0;background:transparent;color:var(--water);font:600 19px var(--display);padding:7px 20px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--water);color:var(--on-solid)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.between{justify-content:space-between}
+.btn{border:1px solid var(--water);background:transparent;color:var(--water);border-radius:5px;padding:4px 10px;cursor:pointer;font-weight:600;font-size:14px}
+.btn.solid{background:var(--water);color:var(--on-solid)}
+.btn.ghost{border-color:var(--line);color:var(--muted)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th{font-weight:600;text-align:left;color:var(--muted);padding:5px 6px;border-bottom:1px solid var(--line)}
+td{padding:5px 6px;border-bottom:1px solid var(--line);vertical-align:middle}
+.so-far button{background:none;border:0;padding:0;color:var(--water);font-weight:600;cursor:pointer;text-align:left}
+.chip{display:inline-block;font-size:13px;line-height:1.5;padding:0 8px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.chip.lead{background:var(--lead-soft);border-color:var(--lead)}
+.chip.maybe{background:var(--maybe-soft);border-color:var(--maybe)}
+.chip.cur{background:var(--water-soft);border-color:var(--water)}
+.grp{font:600 15px var(--display);letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+details.sec{background:var(--card);border:1px solid var(--line);border-radius:8px}
+details.sec>summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:10px;align-items:center;padding:11px 16px}
+details.sec>summary::-webkit-details-marker{display:none}
+.car{width:0;height:0;border-left:7px solid var(--water);border-top:5px solid transparent;border-bottom:5px solid transparent;transition:transform .12s}
+details[open]>summary .car{transform:rotate(90deg)}
+@media (prefers-reduced-motion:reduce){.car{transition:none}}
+.sum-t{display:flex;flex-wrap:wrap;gap:2px 12px;align-items:baseline}
+.sum-t h2{font-size:21px}
+.sum-r{display:flex;flex-wrap:wrap;gap:5px;justify-content:flex-end;min-width:0}
+.body{padding:2px 16px 16px;display:flex;flex-direction:column;gap:12px}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:10px}
+.opt{border:1px solid var(--line);border-radius:6px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;background:var(--card)}
+.opt.lead{border-color:var(--lead);box-shadow:inset 0 0 0 1px var(--lead);background:var(--lead-soft)}
+.opt.maybe{border-color:var(--maybe);background:var(--maybe-soft)}
+.opt.no{opacity:.55}
+.opt h3{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.lab{font-weight:600}
+.opt .fill{flex:1;display:flex;flex-direction:column;gap:6px}
+.acts{display:flex;gap:5px;flex-wrap:wrap}
+.acts button{flex:1;border:1px solid var(--line);background:var(--card);border-radius:4px;padding:3px 6px;font-size:13.5px;font-weight:600;cursor:pointer}
+.acts button[aria-pressed="true"][data-v="lead"]{background:var(--lead);border-color:var(--lead);color:var(--on-solid)}
+.acts button[aria-pressed="true"][data-v="maybe"]{background:var(--maybe);border-color:var(--maybe);color:var(--on-solid)}
+.acts button[aria-pressed="true"][data-v="no"]{background:var(--off);border-color:var(--off);color:var(--on-solid)}
+.gtitle{font-weight:600;color:var(--muted);font-size:14.5px}
+input[type=text],input[type=number],input[type=time],select,textarea{border:1px solid var(--line);background:var(--card);border-radius:4px;padding:4px 6px;max-width:100%}
+textarea{width:100%;min-height:64px;resize:vertical}
+.add{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) auto;gap:8px}
+.add input{width:100%}
+.add.withcur{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) minmax(0,1.3fr) auto}
+.add select{width:100%;min-width:0}
+.ownlinks{display:flex;flex-direction:column;gap:6px;margin-top:2px}
+.ownlinks select{width:100%;max-width:100%}
+.newsec{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1.5fr) minmax(150px,.8fr) auto;gap:8px}
+.newsec input{width:100%}
+.lbl{display:flex;flex-direction:column;gap:2px;font-size:13.5px;color:var(--muted)}
+.bar{display:flex;height:22px;border-radius:3px;overflow:hidden;background:var(--off-soft)}
+.bar i{display:block;min-width:2px;border-right:1px solid var(--card)}
+.k-a{background:var(--k-a)} .k-t{background:var(--k-t)} .k-b{background:var(--k-b)} .k-s{background:var(--k-s)} .k-p{background:var(--k-p)}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:13.5px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:13px;height:13px;border-radius:2px;display:inline-block}
+.status{font-weight:600}
+.status.bad{color:var(--alert)} .status.ok{color:var(--lead)} .status.spare{color:var(--maybe)}
+#sched td input[type=text]{width:100%;min-width:130px}
+#sched td input[type=number]{width:62px}
+.time{white-space:nowrap;font-weight:600}
+.tiny{border:1px solid var(--line);background:transparent;border-radius:3px;cursor:pointer;padding:0 6px;color:var(--muted)}
+.calc{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end}
+.calc input{width:70px}
+.ideas{list-style:none;margin:0;padding:0}
+.ideas li{display:grid;grid-template-columns:minmax(0,1fr) 180px auto;gap:8px;padding:5px 0;border-bottom:1px solid var(--line);align-items:center}
+.ideas input{width:100%}
+#out{min-height:150px}
+.curbox{display:flex;flex-direction:column;gap:6px;background:var(--water-soft);border-radius:6px;padding:9px 11px}
+.curbox select{max-width:100%;width:100%}
+.curchips{display:flex;flex-wrap:wrap;gap:5px}
+.cc{display:inline-flex;align-items:center;gap:3px;font-size:13.5px;line-height:1.35;padding:1px 8px;border-radius:999px;border:1px solid var(--line);background:var(--card);max-width:100%}
+.cc.geo{border-color:var(--water);font-weight:600}
+.cc b{font-weight:700}
+.chipx{border:0;background:none;cursor:pointer;padding:0 0 0 3px;color:inherit;font-size:14px}
+.curline{color:var(--muted)}
+.code{display:inline-block;padding:0 4px;border-radius:3px;border:1px solid var(--line);font-size:12.5px;margin:0 2px 2px 0;background:var(--card)}
+.code.geo{border-color:var(--water);color:var(--water);font-weight:700}
+.code.used{background:var(--water-soft)}
+.tabs button{font-size:21px}
+.tabs{position:sticky;top:0;z-index:20;background:var(--paper);padding-top:8px}
+details.sec{scroll-margin-top:60px}
+#proj-panel .panel{display:flex;flex-direction:column;gap:8px}
+#proj-panel h3{margin:12px 0 2px}
+#proj-panel p,#proj-panel ul,#proj-panel ol{margin:2px 0}
+.eyebrow{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--water);margin:0}
+.ptitle{font-size:26px;line-height:1.2;margin:0}
+.lead{font-size:17px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.chips{display:flex;flex-wrap:wrap;gap:5px}
+.callout{background:var(--water-soft);border-left:4px solid var(--water);border-radius:4px;padding:6px 12px;margin:10px 0}
+.callout h3{margin-top:2px!important}
+.wsgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.wscard{border:1px solid var(--line);border-radius:6px;padding:10px 12px;background:var(--card);display:flex;flex-direction:column;gap:5px}
+.wscard h4{margin:0;font-size:18px}
+.wscard .row{margin-top:auto}
+.btn.small{font-size:13px;padding:3px 9px}
+.pcard{border:1px solid var(--line);border-radius:6px;padding:8px 12px}
+.pcard h4{margin:0 0 4px}
+.six{counter-reset:q;list-style:none;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.six li{counter-increment:q;border:1px solid var(--line);border-radius:6px;padding:8px 10px 8px 42px;position:relative;background:var(--card)}
+.six li::before{content:counter(q);position:absolute;left:10px;top:8px;width:23px;height:23px;border-radius:50%;background:var(--water);color:var(--on-solid);font-weight:700;text-align:center;line-height:23px;font-size:14px}
+.qn{text-align:center;font-weight:700;color:var(--water)}
+ul.inline{display:flex;flex-wrap:wrap;gap:4px 18px}
+.discuss{border:1px dashed var(--water);border-radius:6px;padding:4px 14px 10px;margin-top:10px}
+.pnote textarea{min-height:90px}
+.plist{display:flex;flex-direction:column;gap:5px}
+.prow{display:flex;gap:6px;align-items:center}
+.prow input{flex:1;min-width:0}
+.addp{margin-top:8px}
+.pprint{display:none}
+.cbtns{white-space:nowrap;text-align:right}
+.cbtns .btn+.btn{margin-left:4px}
+.cedit input,.cedit textarea,.cadd input,.cadd textarea{width:100%;box-sizing:border-box}
+.cedit textarea,.cadd textarea{min-height:52px}
+@media (max-width:800px){.two,.wsgrid,.six{grid-template-columns:1fr}}
+.ovbtn{border:1px solid var(--water);border-radius:6px;background:transparent;color:var(--water);font:600 19px var(--display);padding:7px 16px;cursor:pointer}
+.ovbtn[aria-pressed="true"]{background:var(--water);color:var(--on-solid)}
+.ovpick{gap:12px;align-items:flex-end}
+.ovpick select{min-width:240px}
+.ovt td{vertical-align:top}
+.ovt td:first-child{width:14%}.ovt td:nth-child(2){width:40%}
+.ovpts{list-style:none;margin:0;padding:0}
+.ovpts li{padding:1px 0}
+.ovnotes{margin:0;padding-left:20px;font-size:14.5px}
+.ovex{border:1px solid var(--line);border-radius:6px;padding:8px 11px;margin-bottom:8px}
+.ovex p{margin:3px 0}
+#overview-panel h3{margin:14px 0 4px}
+.nogeo{color:var(--alert);font-size:13.5px}
+.tabs{display:flex;flex-wrap:wrap;gap:4px 22px;border-bottom:2px solid var(--line)}
+.tabs button{border:0;border-bottom:3px solid transparent;margin-bottom:-2px;background:none;padding:4px 0 7px;font:600 26px/1.15 var(--display);color:var(--muted);cursor:pointer;text-align:left}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--water)}
+#panel-main{display:flex;flex-direction:column;gap:16px}
+.acts button.del{color:var(--alert)}
+.delrow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.ownpts{list-style:none;margin:0;padding:0}
+.ownpts li{display:flex;gap:8px;align-items:center;padding:3px 0}
+.newpt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.newpt input{width:100%}
+.toolbar{gap:8px}
+.credit{text-align:center;font-size:12px;color:var(--muted);margin:14px 0 0}
+@media print{
+  @page{margin:12mm}
+  html,body{background:#fff}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .noprint,.toolbar,.acts,.add,#addrow,#addidea,#out,.tiny,[data-rmsec],[data-delsec],[aria-label="Add or restore sections"],#reset,.car{display:none!important}
+  .wrap{padding:0;max-width:none}
+  .opts{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .opt,.calc,tr{break-inside:avoid}
+  .opt.no{display:none}
+  .curbox select,.ownlinks .lbl,.add select,.chipx,.nogeo,.delrow{display:none!important}
+  .tabs button:not([aria-selected="true"]){display:none}
+  .tabs{border:0}
+  body.on-ov .tabs{display:none}
+  #proj-panel [data-go],#proj-panel [data-addws]{display:none!important}
+  .wscard,.six li,.pcard{break-inside:avoid}
+  .plist,.addp{display:none!important}
+  .pprint{display:block!important}
+  .curbox{background:none;padding:0}
+  .lbl:has(textarea:placeholder-shown){display:none}
+  details.sec{border-color:var(--line)}
+  details.sec:not([open]),.grp{display:none!important}
+  details.sec>summary{grid-template-columns:minmax(0,1fr) auto}
+  #sched table tr>:nth-child(n+5){display:none}
+  #sched table input,#sched input,#sched select{border:0;background:none;padding:0}
+  #sched td input[type=text]{min-width:0}
+  textarea{border:0;padding:0;resize:none;overflow:hidden}
+}
+@media (max-width:640px){.add,.add.withcur,.newsec{grid-template-columns:1fr}.ideas li{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<script id="saved-state" type="application/json">null</script>
+<div class="wrap">
+  <nav class="tabs" role="tablist" aria-label="Pages">
+    <button id="tabbtn-main" role="tab" type="button">Brainstorming</button>
+    <button id="tabbtn-sofar" role="tab" type="button" hidden>Overview</button>
+    <button id="tabbtn-py9" role="tab" type="button">Year 9 Example</button>
+    <button id="tabbtn-py12" role="tab" type="button">Year 12 Example</button>
+    <button id="tabbtn-one" role="tab" type="button">One Project</button>
+  </nav>
+  <header class="noprint">
+    <p class="muted small" id="intro">Nothing here is fixed. Mark the ideas you like, change anything and add your own. Press Save, then pass the file on. Print covers the tab you are on, and on this tab only the open sections.</p>
+    <div class="row toolbar">
+      <span class="small muted" id="savestate" aria-live="polite"></span>
+      <button class="btn ghost" id="openall" type="button">Open all</button>
+      <button class="btn ghost" id="closeall" type="button">Close all</button>
+      <button class="btn" id="copy" type="button">Copy summary</button>
+      <button class="btn solid" id="save" type="button">Save</button>
+      <button class="btn" id="saveas" type="button">Save as</button>
+      <button class="btn" id="print" type="button">Print</button>
+      <div class="seg" role="group" aria-label="Choose cohort">
+        <button id="tab-y9" type="button">Year 9</button>
+        <button id="tab-y12" type="button">Year 12</button>
+      </div>
+      <button class="ovbtn" id="tabbtn-overview" type="button" aria-pressed="false">Overview of school curriculum</button>
+    </div>
+  </header>
+  <textarea id="out" readonly hidden aria-label="Summary text"></textarea>
+  <section class="panel so-far" id="sofar-panel" aria-label="The brief so far">
+    <h2 id="sf-title">The brief so far</h2>
+    <div class="scroll" id="sofar"></div>
+    <p class="muted small" id="curnote"></p>
+    <p class="muted small">"In current brief" shows what the project brief suggests today. It is a starting point, not a decision.</p>
+  </section>
+  <div id="proj-panel" hidden></div>
+  <section class="panel" id="overview-panel" aria-label="Overview of school curriculum" hidden>
+    <h2>Overview of school curriculum</h2>
+    <div class="row ovpick noprint">
+      <label class="lbl">Year group<select id="ov-year" aria-label="Year group"><option value="y9">Year 9 (Key Stage 3)</option><option value="y12">Year 12 (AS and A level)</option></select></label>
+      <label class="lbl">Subject<select id="ov-sub" aria-label="Subject"></select></label>
+    </div>
+    <p class="small muted" id="ov-caption"></p>
+    <div class="scroll" id="ov-table"></div>
+    <h3>Notes</h3>
+    <ul class="ovnotes" id="ov-notes"></ul>
+    <h3>Coding convention</h3>
+    <div id="ov-conv"></div>
+    <h3>Examples a colleague could propose</h3>
+    <div id="ov-ex"></div>
+  </section>
+  <div id="panel-main">
+  <div id="board" style="display:flex;flex-direction:column;gap:8px"></div>
+  <section class="panel" aria-label="Add or restore sections">
+    <h2>Add a section</h2>
+    <div class="newsec">
+      <input type="text" id="ns-name" placeholder="Section name, such as Civil engineering" aria-label="Section name">
+      <input type="text" id="ns-q" placeholder="The question it answers (optional)" aria-label="Guiding question">
+      <select id="ns-group" aria-label="Where it goes"></select>
+      <button class="btn solid" id="ns-add" type="button">Add section</button>
+    </div>
+    <p class="small status bad" id="ns-msg" aria-live="polite"></p>
+    <div id="removed"></div>
+    <h3 id="pt-title">Add a curriculum point</h3>
+    <div class="newpt"><input type="text" id="pt-text" placeholder="For example, your school's own topic or an exam board reference" aria-label="Curriculum point"><button class="btn" id="pt-add" type="button">Add point</button></div>
+    <ul class="ownpts" id="ownpts"></ul>
+    <p class="small muted" id="cursrc"></p>
+  </section>
+  <div class="row"><button class="btn ghost" id="reset" type="button">Reset everything</button></div>
+  </div>
+<p class="credit">Prompt engineered by Dr Deepak Gopinath and designed in Claude - 09 Nov 2026</p>
+</div>
+<script>
+const PRISTINE='<!DOCTYPE html>\n'+document.documentElement.outerHTML;
+const SECTIONS=[
+{"group":"The challenge and the place","id":"frame","name":"The big question","q":"What are students being asked to solve?","opts":[{"id":"f1","t":"Should we build here at all?","d":"Students decide what should happen on a site with a real problem, and whether it is worth the cost.","y9":"Can this site be made to work for people, and is it worth the money?","y12":"Recommend what should happen on the site, how it copes with its main risk and what it costs. Doing nothing is allowed.","cur":1},{"id":"f2","t":"The place in 2050","d":"Students plan for future change, not just today's problems.","y9":"What would this place need to be like in 2050, and what would you change first?","y12":"Write a phased plan for a changing climate and population, showing what is done now and what can wait."},{"id":"f3","t":"Fix, adapt or start again?","d":"Something has gone wrong, or the place no longer works. Students plan the response using real evidence.","y9":"What do you fix first, and who do you help first?","y12":"Set out a plan that builds back better, and say who pays."}]},
+{"group":"The challenge and the place","id":"site","name":"Site","q":"Where should the brief be set?","grouped":1,"opts":[{"id":"s1","g":"In Tewkesbury","t":"Healings Mill","d":"Grade II listed flour mill on Quay Street, vacant since 2006, with part of the land in Flood Zone 3.","good":"All four subjects work on one place: risk, planning, a listed building and cost.","w":"Real owners and live discussions, so proposals must be clearly hypothetical.","cur":1,"src":["Victorian Society","https://www.victoriansociety.org.uk/endangered-buildings/top-ten-endangered-buildings-2021-healings-flour-mill-and-warehouses-tewkesbury-grade-ii-by-w-h-james-of-tewkesbury-for-samuel-healing-and-son-1865-6/"]},{"id":"s2","g":"In Tewkesbury","t":"Severn Ham","d":"A 70-hectare protected meadow between the rivers, one of the few traditionally managed ham meadows, and flooded in winter.","good":"Strong for what floodplains do, and for arguing not to build. Could host a small flood-tolerant pavilion.","w":"Offers less building work for architecture and quantity surveying.","src":["Tewkesbury Town Council","https://tewkesburytowncouncil.gov.uk/?p=779"]},{"id":"s3","g":"In Tewkesbury","t":"Mythe water treatment works","d":"Flooded in 2007, leaving about 140,000 homes without tap water for around 16 days.","good":"Shows how one flooded site affects a whole region. Good for infrastructure and emergency planning.","w":"An operational site, so drawings and access would be limited. Ask Severn Trent first.","src":["2007 floods summary","https://en.wikipedia.org/wiki/2007_United_Kingdom_floods"]},{"id":"s4","g":"In Tewkesbury","t":"Carrant and Tirle Brooks, Ashchurch side","d":"Smaller watercourses that back up when the main rivers are high, in an area where new homes have been discussed.","good":"Suits new-build planning, drainage and natural flood management.","w":"Housing proposals are contested locally. Check current plans before using them.","src":["Town council evidence on 2007","https://publications.parliament.uk/pa/cm200708/cmselect/cmenvfru/49/49we61.htm"]},{"id":"s5","g":"Along the Severn","t":"Upton-upon-Severn","d":"A £4.4 million scheme, completed in 2012, includes a wall with glass panels so the river stays in view at Waterside.","good":"A finished scheme students can critique. Good for design, cost and town character.","w":"The main decisions are already made, so the task is to evaluate them.","src":["GOV.UK scheme summary","https://www.gov.uk/government/publications/upton-upon-severn-flood-risk-management-scheme/upton-upon-severn-flood-risk-management-scheme"]},{"id":"s6","g":"Along the Severn","t":"Beales Corner, Bewdley","d":"A 300-metre system of walls, gates and demountable barriers, completed in 2025, benefiting 50 properties.","good":"A clear value-for-money story, because the £10 million scheme protects few homes.","w":"Further from most of your schools.","src":["GOV.UK press release","https://www.gov.uk/government/news/major-flood-risk-management-scheme-completed-in-bewdley"]},{"id":"s7","g":"Nearer UWE and Wales","t":"Avonmouth to Aust","d":"A £100 million scheme completed in 2025: 17km of improved Severn Estuary defences and 80 hectares of wetland.","good":"Local to Bristol and South Gloucestershire schools. Adds tidal flooding, industry and habitat.","w":"Large scale, so less suited to single-building design.","src":["Project summary","https://www.neccontract.com/projects/avonmouth-to-aust-flood-defences-uk"]},{"id":"s8","g":"Nearer UWE and Wales","t":"Stephenson Street, Newport","d":"A £25 million scheme on the River Usk, opened in October 2025, reducing risk to more than 2,000 homes and businesses in Lliswerry.","good":"A Welsh site for Welsh schools, with planning under TAN 15.","w":"On the Usk rather than the Severn itself, although it runs into the Severn Estuary.","src":["Natural Resources Wales","https://naturalresources.wales/about-us/news-and-blogs/news/2025-news-releases/major-newport-flood-scheme-officially-opened/?lang=en"]},{"id":"s9","g":"Nearer UWE and Wales","t":"Bristol's River Avon","d":"Avon Riversides 2100, formerly the Bristol Avon Flood Strategy, is the city's long-term plan for a river at its heart.","good":"Students may know the place. It is a live city-centre question with long time horizons.","w":"Not on the Severn, and plans are still developing.","src":["Bristol City Council","https://www.bristol.gov.uk/policies-plans-strategies/flood-risk-strategy"]},{"id":"s10","g":"Nearer UWE and Wales","t":"Stroud Valleys","d":"Natural flood management across the Frome catchment, relying on voluntary work with landowners.","good":"Best for upstream and low-engineering ideas. Works well as a comparison site.","w":"Few buildings to design or cost, so it suits a supporting role.","src":["Stroud District Council","https://www.stroud.gov.uk/rsuds"]}]},
+{"group":"Subjects","id":"geo","name":"Geography","q":"What is happening here, where, and why?","opts":[{"id":"g1","t":"Mapping the place","d":"Use maps, aerial images and LiDAR to show what is where, and what is at risk.","y9":"Annotate a printed map to mark key features, problems and opportunities.","y12":"Layer open data in GIS, including the 1m terrain model, to build an evidence map of the site.","n":"Printed maps for Year 9. Computer room and GIS for Year 12.","cur":1},{"id":"g2","t":"Reading the evidence","d":"Use data over time to explain why the place is as it is.","y9":"Turn a simple data set into a graph, then explain the pattern.","y12":"Compare recent records with older data, and discuss trends, causes and uncertainty.","n":"Data sheets for the chosen topic."},{"id":"g3","t":"Local fix or bigger picture?","d":"Compare solutions on the site with changes across the wider area.","y9":"Use a simple physical model to test a site-only fix against a wider one.","y12":"Weigh up the evidence for site-scale and landscape-scale approaches, using a local case.","n":"Tray model or case-study sheets."}]},
+{"group":"Subjects","id":"plan","name":"Urban planning","q":"What should happen where, and whose interests must be considered?","opts":[{"id":"p1","t":"Who gets the best land?","d":"Arrange uses on the site according to need, risk and access.","y9":"Place homes, a care home, a car park and a park on a site map, using cards.","y12":"Apply relevant planning policy, such as the NPPF or Planning Policy Wales, to a site layout.","n":"Base maps and use cards.","cur":1},{"id":"p2","t":"The planning meeting","d":"Role-play a real decision with competing interests.","y9":"Town-hall vote with residents, a developer, a shop owner and a community group.","y12":"Mock planning committee with objections, officer advice and a recorded decision.","n":"Role cards, with one person acting as chair."},{"id":"p3","t":"Streets for people and nature","d":"Redesign a street or space so it works better for people, nature and the climate.","y9":"Redraw a street with trees, green space and safer crossings, and spend tokens.","y12":"Lay out green and blue infrastructure, and estimate the benefits before and after.","n":"Street plans and tracing paper."}]},
+{"group":"Subjects","id":"arch","name":"Architecture","q":"What should the buildings or structures be like?","opts":[{"id":"a1","t":"Design for the challenge","d":"Design a building that responds to the main risk or need of the site.","y9":"Sketch a section showing how the building copes, then make a card model.","y12":"Draw a section setting levels, materials and safe access for the site.","n":"Pre-cut card for Year 9. Studio space for Year 12.","cur":1},{"id":"a2","t":"Four ways to respond","d":"Compare different design strategies, such as resisting, adapting, raising or moving.","y9":"Make small models of each strategy and test them.","y12":"Choose a strategy and defend it, including how people use and leave the building.","n":"Test trays, foam and card."},{"id":"a3","t":"Old building, new purpose","d":"Adapt a historic building without losing what makes it special.","y9":"Spot the weak points on a photo of an old building, and suggest changes.","y12":"Decide what may change in a listed building, and what must stay.","n":"Photos and drawings of a historic building."}]},
+{"group":"Subjects","id":"qs","name":"Quantity surveying","q":"What will it cost, what is affordable and what trade-offs are necessary?","opts":[{"id":"q1","t":"Is it worth it?","d":"Measure from drawings, then make cost decisions.","y9":"Measure a 1:50 plan with a scale ruler, then spend 100 tokens on improvements.","y12":"Take off quantities from a 1:100 drawing and build a simple cost plan.","n":"Scale rulers, plans and rate sheets.","cur":1},{"id":"q2","t":"Cheapest now or best over time?","d":"Compare the lowest first cost with options that last longer or cost less to run.","y9":"Card game: choose materials, then see what they cost after ten years.","y12":"Work out whole-life costs and payback for two options.","n":"Cost cards or a simple spreadsheet."},{"id":"q3","t":"Who pays?","d":"Explore how owners, councils, government and others share the cost.","y9":"Fund a scheme from four pots, and decide who pays what and why.","y12":"Calculate a benefit-cost ratio and write a short funding case.","n":"Figures from a real local scheme."}]},
+{"group":"Subjects","id":"re","name":"Real estate","q":"Who needs it, who benefits and how might value or delivery be affected?","opts":[{"id":"re1","t":"Which properties come first?","d":"Compare property cards and decide where limited funding should go.","y9":"Rank fictional property cards by location, value, occupants and condition, then fund the top three.","y12":"Weigh need, value and risk to recommend where a council should invest first.","n":"Property cards and a simple funding table.","cur":1},{"id":"re2","t":"What is the place worth?","d":"Identify the benefits of green and blue space, and which can be given a value.","y9":"Sort benefit cards into money, people and nature, and say which matter most.","y12":"Build a multi-capital value case for the scheme, saying which benefits can credibly be given a money value.","n":"Benefit cards and simple valuation examples."},{"id":"re3","t":"Would you buy here?","d":"Explore how risk, location and the environment affect demand and value.","y9":"Role-play buyers and estate agents for homes in different locations.","y12":"Analyse how risk and environmental quality affect sale prices, insurance and lending.","n":"Listing sheets for fictional homes."}]},
+{"group":"Subjects","id":"ep","name":"Environmental performance","q":"Will it work environmentally, and how can performance be demonstrated?","opts":[{"id":"ep1","t":"Test a surface","d":"Compare how different surfaces perform, for example for runoff, heat or wildlife.","y9":"Compare roofs, paving, grass and planting in a simple hands-on test.","y12":"Measure performance and work out what difference a design change makes.","n":"Trays, surface samples, measuring jugs, thermometers and timers.","cur":1},{"id":"ep2","t":"Score the scheme","d":"Use a scorecard to compare how well design options perform.","y9":"Score two designs for people, wildlife and comfort, then improve the weaker one.","y12":"Compare layouts using baseline habitat and environmental data, then set monitoring indicators.","n":"Scorecards and environmental data sheets."},{"id":"ep3","t":"Hot spots and cool spots","d":"Link green and blue spaces to comfort and energy use.","y9":"Use the thermal camera to compare paving, grass and shaded surfaces.","y12":"Use thermal images to assess cooling and heat loss, and recommend improvements.","n":"Thermal camera from the support session."}]},
+{"group":"Support sessions","id":"lidar","name":"3D scanning and LiDAR","q":"How can real measurements feed the design?","opts":[{"id":"l1","t":"Terrain from open data","d":"Turn Environment Agency LiDAR into a ground profile across the site.","y9":"Read a printed cross-section and mark the high and low points.","y12":"Extract the profile in GIS and compare it with other site data.","n":"Pre-processed data.","cur":1},{"id":"l2","t":"Scan a space","d":"Scan a doorway, room or street live, and take measurements.","y9":"Short tablet demo: measure a doorway or step.","y12":"Measure the scan and add the dimensions to the team's drawings.","n":"Tablets or scanner. Check the safety class."},{"id":"l3","t":"From scan to model","d":"Turn terrain data into a 3D-printed or layered physical base.","y9":"Use a printed model of the site to see how the land shapes the place.","y12":"Test each team's proposal on the base.","n":"Printing lead time, so start early."}]},
+{"group":"Support sessions","id":"thermal","name":"Thermal camera","q":"What can heat tell us about a building or a place?","opts":[{"id":"t1","t":"Find the hidden problem","d":"Spot damp, leaks or heat loss that the eye cannot see.","y9":"Five-minute demo: which wall panel is wet, or where is heat escaping?","y12":"Survey a panel or room and turn the findings into a repair scope.","n":"Prepared panels, kept away from electrics.","cur":1},{"id":"t2","t":"Which material performs best?","d":"Compare how different materials hold heat or moisture.","y9":"Compare images of brick, plaster, timber and cement board.","y12":"Use a time series of images to choose materials.","n":"Sample materials, prepared beforehand."},{"id":"t3","t":"Warm and dry?","d":"Explore where different aims, such as resilience and energy saving, help or conflict.","y9":"Find the heat leaks in a building, then discuss what else it must cope with.","y12":"Assess a retrofit that has to meet more than one aim.","n":"Access to a suitable building."}]},
+{"group":"Support sessions","id":"model","name":"Model making","q":"How can students test ideas physically?","opts":[{"id":"m1","t":"Sectional model","d":"Build a section through the team's building.","y9":"Simple card section using pre-cut pieces and scissors only.","y12":"Sectional model at 1:50.","n":"Card and glue. Supervision for any cutting tools.","cur":1},{"id":"m2","t":"One shared site table","d":"All teams add their ideas to one large site base, then the whole scheme is tested.","y9":"Each team places one intervention, followed by a whole-group test.","y12":"Teams negotiate how their proposals fit together.","n":"Large base and a plan for the test."},{"id":"m3","t":"Quick massing","d":"Try out building forms quickly on a site base.","y9":"Arrange blocks to find the best layout.","y12":"Test three layouts at 1:500 and record the best.","n":"Foam or timber blocks, and site bases."}]},
+{"group":"The day","id":"output","name":"Final presentation","q":"How do the subjects come together?","opts":[{"id":"o1","t":"Pitch to a panel","d":"Teams present one combined plan to judges in parallel rooms, then finalists present to everyone.","y9":"A3 plan and a 3-minute pitch.","y12":"A2 proposal and a 4-minute pitch with questions.","n":"Panels, one for each room.","cur":1},{"id":"o2","t":"Gallery walk and vote","d":"Teams display work and explain it to visitors, who vote.","y9":"Students spend voting stickers on the plans they trust most.","y12":"Students act as investors, with a limited pot to allocate.","n":"Wall or table space for all teams."},{"id":"o3","t":"Test finale","d":"Proposals are tested on a physical or digital model in front of everyone.","y9":"The model is put through a scenario, and the class sees what works.","y12":"Each team's scheme is tested against a set scenario.","n":"Reliable demonstration set-up, and a rehearsal."}]},
+{"group":"Around the day","id":"guests","name":"Who else could be involved?","q":"Who would make it feel real?","opts":[{"id":"e1","t":"Local professionals as judges","d":"Planners, architects and surveyors sit on the panels.","y9":"One visitor per room.","y12":"One practitioner on each panel.","n":"Invitations well ahead."},{"id":"e2","t":"A voice from the community","d":"A resident, community group or responder describes what living with the issue is like.","y9":"A short film or a 5-minute talk.","y12":"A short talk, then questions about what the plans missed.","n":"Tell teachers first, as it may be personal for some students."},{"id":"e3","t":"Agencies and owners","d":"The Environment Agency, council or another organisation explains its role.","y9":"A short 'who does what' talk.","y12":"A client briefing from a real organisation.","n":"Early contact, and agreement on how the site is described."}]},
+{"group":"Around the day","id":"after","name":"Before and after the day","q":"How does it connect back to school?","opts":[{"id":"b1","t":"Starter lesson","d":"Teachers run a short lesson beforehand, so students arrive ready.","y9":"10-minute introduction to the place and the issue.","y12":"2-page site pack to read before the day.","n":"Resource pack for teachers.","cur":1},{"id":"b2","t":"Take-home challenge","d":"Students carry on after the day.","y9":"Look at the same issue around home or school.","y12":"Use the data in NEA or an extended project.","n":"Resource page linked from the notebook."},{"id":"b3","t":"Follow-up showcase","d":"Share the best work later on.","y9":"Winning teams displayed at their schools.","y12":"Online clinic or an invitation to a UWE open day.","n":"A named person to follow up."}]},
+{"group":"Around the day","id":"gifts","name":"Giveaways","q":"What do students take home?","opts":[{"id":"k1","t":"Scale ruler and notebook","d":"About £600 for 240 students before VAT and delivery, on supplier web prices.","y9":"15cm scale ruler and recycled notebook, about £2.28 each.","y12":"30cm scale ruler and recycled notebook, about £2.72 each.","cur":1},{"id":"k2","t":"Scale ruler and printed workbook","d":"About £233 for 240 students, plus printing.","y9":"15cm scale ruler, about £0.75.","y12":"30cm scale ruler, about £1.19."},{"id":"k3","t":"Year 12 upgrade","d":"About £803 for 240 students before VAT and delivery.","y9":"As the recommended pack.","y12":"Triangular scale ruler and notebook, about £4.41 each."}]}];
+const TEMPLATES={
+y9:[
+ {id:"rot",name:"Four-way rotation (current brief)",why:"Every team meets all four subjects, at 30 minutes each.",rows:[[15,"Arrival and registration","Lecture theatre","a"],[10,"Welcome and the brief","Lecture theatre","a"],[30,"Rotation 1","4 workshop rooms","t"],[5,"Changeover","","b"],[30,"Rotation 2","4 workshop rooms","t"],[5,"Changeover","","b"],[30,"Rotation 3","4 workshop rooms","t"],[5,"Changeover","","b"],[30,"Rotation 4","4 workshop rooms","t"],[30,"Packed lunch","Indoor space for 120","b"],[30,"Team studio","Zone rooms","s"],[30,"Pitches in parallel","Zone rooms","p"],[5,"Move to lecture theatre","","b"],[10,"Finalists and prize","Lecture theatre","p"],[5,"Evaluation","Lecture theatre","a"]]},
+ {id:"deep",name:"Two deep dives",why:"Longer, more hands-on sessions, but each team sees only two subjects.",rows:[[15,"Arrival and registration","Lecture theatre","a"],[15,"Welcome and the brief","Lecture theatre","a"],[5,"Move to rooms","","b"],[50,"Deep dive 1","4 workshop rooms","t"],[10,"Break and changeover","","b"],[50,"Deep dive 2","4 workshop rooms","t"],[30,"Packed lunch","Indoor space for 120","b"],[35,"Team studio: share what each half learned","Zone rooms","s"],[35,"Pitches in parallel","Zone rooms","p"],[5,"Move to lecture theatre","","b"],[15,"Finalists and prize","Lecture theatre","p"],[5,"Evaluation","Lecture theatre","a"]]},
+ {id:"sim",name:"Scenario simulation",why:"A developing scenario drives the day, with subjects coming in as events unfold.",rows:[[15,"Arrival and registration","Lecture theatre","a"],[20,"The warning: scenario briefing","Lecture theatre","a"],[40,"Round 1: what is happening?","Team tables","t"],[10,"Break","","b"],[40,"Round 2: the scenario changes","Team tables","t"],[30,"Packed lunch","Indoor space for 120","b"],[45,"Round 3: recover and rebuild","Team tables","s"],[40,"Gallery walk","Exhibition space","p"],[20,"Town meeting and vote","Lecture theatre","p"],[10,"Evaluation","Lecture theatre","a"]]}],
+y12:[
+ {id:"jig",name:"Jigsaw consortia (current brief)",why:"Pairs specialise, then teach their team, so the teams must integrate.",rows:[[15,"Arrival and registration","Lecture theatre","a"],[15,"Welcome and client brief","Lecture theatre","a"],[5,"Move to strands","","b"],[60,"Expert workshop","4 strand rooms","t"],[5,"Break","","b"],[45,"Specialist lab","Labs and studios","t"],[30,"Packed lunch","Indoor space for 120","b"],[45,"Consortium studio","3 panel rooms","s"],[30,"Panels in parallel","3 panel rooms","p"],[10,"Winners and feedback","Lecture theatre","p"],[10,"NEA next steps, progression and evaluation","Lecture theatre","a"]]},
+ {id:"car",name:"Four-subject carousel",why:"Everyone sees every subject, but with less depth.",rows:[[15,"Arrival and registration","Lecture theatre","a"],[15,"Welcome and client brief","Lecture theatre","a"],[35,"Rotation 1","4 rooms","t"],[5,"Changeover","","b"],[35,"Rotation 2","4 rooms","t"],[5,"Changeover","","b"],[35,"Rotation 3","4 rooms","t"],[30,"Packed lunch","Indoor space for 120","b"],[35,"Rotation 4","4 rooms","t"],[25,"Team studio","Panel rooms","s"],[25,"Panels in parallel","Panel rooms","p"],[10,"Results and evaluation","Lecture theatre","a"]]},
+ {id:"spr",name:"Consultancy sprint",why:"Short expert talks, then a long studio with experts moving between teams.",rows:[[15,"Arrival and registration","Lecture theatre","a"],[45,"Client brief and four expert talks","Lecture theatre","t"],[5,"Move to studios","","b"],[70,"Studio sprint 1, experts circulating","Studios","s"],[30,"Packed lunch","Indoor space for 120","b"],[35,"Studio sprint 2","Studios","s"],[45,"Panels in parallel","Panel rooms","p"],[15,"Winners and feedback","Lecture theatre","p"],[10,"Evaluation","Lecture theatre","a"]]}]};
+const IDEAS=["Could a field visit to the site, or a short film of it, come before the day?","Could the same site carry over to next year's cohorts?"];
+
+const CUR={
+y9:{note:"Year 9: Key Stage 3 mapping codes from the school curriculum mapping. These are codes created for this project, not DfE references.",cats:[
+{"name": "GEOGRAPHY", "subject": "Geography", "geo": 1, "items": [["G1", "Detailed place studies at different scales"], ["G2", "Rivers, hydrology and catchments"], ["G3", "Weather, climate and climate change"], ["G4", "Rocks, weathering and soils"], ["G5", "Population and urbanisation"], ["G6", "Economic activity and resource use"], ["G7", "Natural resources, including energy and water"], ["G8", "Interaction of human and physical processes"], ["G9", "Human dependence on and interaction with natural systems"], ["G10", "OS/topographic maps, grid references, scale, aerial/satellite imagery"], ["G11", "GIS and spatial data"], ["G12", "Fieldwork, data collection, analysis and communication"]], "proj": "Where should our community develop?", "projd": "Map development needs, flood risk, transport, services and green infrastructure before recommending where and how development should occur.", "opps": "GIS; flood mapping; environmental survey; urban planning; site selection; LiDAR/3D scanning"},
+{"name": "DESIGN AND TECHNOLOGY", "subject": "Design & Technology", "geo": 0, "items": [["DT1", "Identify and understand user needs"], ["DT2", "Identify and solve design problems"], ["DT3", "Develop design specifications"], ["DT4", "Generate and communicate creative ideas"], ["DT5", "Use annotated sketches, plans, 3D and mathematical modelling"], ["DT6", "Select materials according to properties and performance"], ["DT7", "Manufacture accurately using appropriate processes"], ["DT8", "Test, evaluate and refine designs"], ["DT9", "Consider social, environmental and technological developments"], ["DT10", "Understand structural and mechanical principles"]], "proj": "Flood-resilient home", "projd": "develop a client brief, specification and concept; choose materials; construct and test a prototype.", "opps": "Model-making; structural challenge; laser cutting; BIM; sustainable materials; modular housing; inclusive design"},
+{"name": "SCIENCE", "subject": "Science", "geo": 0, "items": [["S1", "Ask questions and develop scientific explanations"], ["S2", "Plan investigations and identify variables"], ["S3", "Undertake observations and measurements"], ["S4", "Analyse and present data"], ["S5", "Evaluate reliability and validity"], ["S6", "Energy and energy transfers"], ["S7", "Forces and their effects"], ["S8", "Properties and behaviour of materials"], ["S9", "Earth, atmosphere and climate"], ["S10", "Ecosystems and environmental interactions"]], "proj": "How energy-efficient is our school?", "projd": "Measure temperatures and investigate insulation/materials before recommending interventions.", "opps": "Thermal cameras; insulation experiments; building physics; materials testing; air-quality/environmental monitoring"},
+{"name": "MATHEMATICS", "subject": "Mathematics", "geo": 0, "items": [["M1", "Number and calculation"], ["M2", "Ratio, proportion and rates of change"], ["M3", "Algebra and mathematical relationships"], ["M4", "Geometry and measures"], ["M5", "Scale and spatial reasoning"], ["M6", "Area and volume"], ["M7", "Statistics and data representation"], ["M8", "Probability and uncertainty"], ["M9", "Mathematical modelling"], ["M10", "Apply mathematics to unfamiliar problems"]], "proj": "Design a 15-minute neighbourhood", "projd": "calculate distances, areas, densities, population capacity and proportions of different land uses.", "opps": "Masterplanning; scale plans; housing-density calculations; accessibility analysis; development scenarios"},
+{"name": "COMPUTING", "subject": "Computing", "geo": 0, "items": [["C1", "Computational thinking and abstraction"], ["C2", "Algorithms"], ["C3", "Programming"], ["C4", "Data collection and representation"], ["C5", "Analyse and manipulate data"], ["C6", "Model real-world problems computationally"], ["C7", "Understand computer systems and networks"], ["C8", "Evaluate digital technology"], ["C9", "Understand privacy, security and responsible use of technology"]], "proj": "Smart neighbourhood", "projd": "analyse environmental, movement or demographic data and design a digital solution to a local problem.", "opps": "GIS; sensor data; urban simulation; digital twins; smart cities; data visualisation"},
+{"name": "ENGLISH", "subject": "English", "geo": 0, "items": [["E1", "Read and interpret complex information"], ["E2", "Identify and evaluate evidence"], ["E3", "Compare different viewpoints"], ["E4", "Write for different audiences and purposes"], ["E5", "Construct persuasive arguments"], ["E6", "Use evidence to support claims"], ["E7", "Participate effectively in discussion and debate"], ["E8", "Deliver organised spoken presentations"], ["E9", "Listen and respond critically to others"]], "proj": "Planning inquiry", "projd": "investigate a development proposal and prepare arguments representing different stakeholders.", "opps": "Consultation; stakeholder debate; public-speaking/pitch workshop; writing a planning statement; communicating technical evidence"},
+{"name": "HISTORY", "subject": "History", "geo": 0, "items": [["H1", "Understand chronology and historical change"], ["H2", "Analyse causes and consequences"], ["H3", "Understand continuity and change"], ["H4", "Examine historical significance"], ["H5", "Analyse primary and secondary evidence"], ["H6", "Evaluate competing interpretations"], ["H7", "Place local history within wider contexts"], ["H8", "Construct evidence-based accounts"]], "proj": "How has our town changed?", "projd": "Compare historic maps, census information, images and present-day land uses.", "opps": "Historic GIS; heritage conservation; adaptive reuse; urban morphology; balancing heritage and regeneration"},
+{"name": "CITIZENSHIP", "subject": "Citizenship", "geo": 0, "items": [["CT1", "Democracy and government"], ["CT2", "Rights and responsibilities"], ["CT3", "How laws and decisions affect citizens"], ["CT4", "Local and national decision-making"], ["CT5", "Research social and political issues"], ["CT6", "Evaluate evidence and competing viewpoints"], ["CT7", "Debate and reason with others"], ["CT8", "Understand how citizens can influence decisions"]], "proj": "Youth neighbourhood plan", "projd": "investigate what young people need from their community and present recommendations.", "opps": "Planning committee simulation; citizen engagement; consultation; stakeholder negotiation; youth participation"},
+{"name": "ART AND DESIGN", "subject": "Art & Design", "geo": 0, "items": [["AD1", "Develop creative ideas"], ["AD2", "Research visual and contextual sources"], ["AD3", "Experiment with materials and techniques"], ["AD4", "Record observations and ideas"], ["AD5", "Develop visual communication"], ["AD6", "Analyse creative works"], ["AD7", "Evaluate and refine work"], ["AD8", "Understand art, craft, design and architecture in historical/cultural contexts"]], "proj": "Identity of place", "projd": "investigate what makes a neighbourhood distinctive and create a visual/model response.", "opps": "Architectural drawing; urban photography; model-making; public art; placemaking; visualisation"},
+{"name": "MODERN LANGUAGES", "subject": "Modern Languages", "geo": 0, "items": [["ML1", "Understand increasingly complex spoken/written language"], ["ML2", "Communicate information and ideas"], ["ML3", "Express and justify opinions"], ["ML4", "Use language for practical purposes"], ["ML5", "Produce coherent written communication"], ["ML6", "Interpret authentic sources"], ["ML7", "Develop intercultural understanding"]], "proj": "Inclusive city guide", "projd": "create a bilingual sustainable-travel or visitor guide.", "opps": "Multilingual wayfinding; inclusive city communication; international comparison of cities and sustainability"},
+{"name": "PHYSICAL EDUCATION / ACTIVE LIFESTYLES", "subject": "Physical Education / Active Lifestyles", "geo": 0, "items": [["PE1", "Develop competence in physical activity"], ["PE2", "Analyse performance"], ["PE3", "Evaluate how to improve performance"], ["PE4", "Understand principles supporting healthy, active lives"], ["PE5", "Participate in sustained physical activity"], ["PE6", "Understand opportunities for continued participation"]], "proj": "Active travel audit", "projd": "investigate whether the school neighbourhood enables walking, wheeling, cycling and physical activity.", "opps": "Walkability audit; street design; active travel; accessibility; healthy-place assessment"}]},
+y12:{note:"Year 12: AS and A level curriculum and content mapping points. Exam board specifications differ, so not every student will meet every point in Year 12.",cats:[
+{"name": "GEOGRAPHY", "subject": "Geography", "geo": 1, "items": [["G1", "Water cycle: stores, flows, runoff and catchment hydrology"], ["G2", "Water/carbon cycles, land-use change and climate feedbacks"], ["G3", "Changing places: connections, flows and external influences"], ["G4", "Place meanings, representation and place-making"], ["G5", "Geographical data, sources, reliability and critical evaluation"], ["G6", "Qualitative methods and research ethics"], ["G7", "Quantitative/geospatial skills, statistics and GIS"], ["G8", "Fieldwork, sampling and data quality"], ["G9", "Independent geographical investigation/NEA"], ["AO1", "Knowledge and understanding"], ["AO2", "Application, interpretation, analysis and evaluation"], ["AO3", "Geographical investigation and skills"]], "proj": "Regeneration/NEA scoping investigation", "projd": "develop a geographical question around regeneration, flooding, green infrastructure or people's perceptions of place and identify appropriate evidence.", "opps": "Advanced GIS; fieldwork design; LiDAR; environmental assessment; place research; regeneration analysis"},
+{"name": "DESIGN AND TECHNOLOGY", "subject": "Design & Technology", "geo": 0, "items": [["DT1", "Identify design possibilities and user requirements"], ["DT2", "Research and analyse design contexts"], ["DT3", "Produce specifications"], ["DT4", "Generate and develop design ideas"], ["DT5", "Apply technical knowledge"], ["DT6", "Materials selection and performance"], ["DT7", "Prototype manufacture"], ["DT8", "Testing, evaluation and refinement"], ["DT9", "Social, moral and environmental considerations"], ["DT10", "Commercial/manufacturing considerations"]], "proj": "Low-carbon community building", "projd": "research users and context, develop specifications and produce/test a design solution.", "opps": "BIM; CAD; prototyping; digital fabrication; sustainable construction; circular materials"},
+{"name": "PHYSICS", "subject": "Physics", "geo": 0, "items": [["P1", "Measurement and uncertainty"], ["P2", "Mechanics and forces"], ["P3", "Materials and mechanical properties"], ["P4", "Energy and power"], ["P5", "Electrical systems"], ["P6", "Waves"], ["P7", "Apply mathematical relationships"], ["P8", "Experimental design"], ["P9", "Analyse and evaluate experimental evidence"]], "proj": "Can we improve building performance?", "projd": "Investigate heat transfer, structural performance, renewable energy or material behaviour.", "opps": "Structural bridge challenge; thermal imaging; solar/energy experiment; sensor technology"},
+{"name": "CHEMISTRY", "subject": "Chemistry", "geo": 0, "items": [["CH1", "Structure and properties of materials"], ["CH2", "Bonding and material behaviour"], ["CH3", "Energetics"], ["CH4", "Quantitative chemistry"], ["CH5", "Chemical analysis"], ["CH6", "Experimental investigation"], ["CH7", "Evaluate evidence and uncertainty"], ["CH8", "Environmental and industrial applications of chemistry"]], "proj": "What should we build with?", "projd": "Compare conventional and lower-carbon construction materials according to performance and environmental criteria.", "opps": "Concrete/cement alternatives; material chemistry; embodied carbon; recycling and circular construction"},
+{"name": "BIOLOGY / ENVIRONMENTAL SCIENCE", "subject": "Biology / Environmental Science", "geo": 0, "items": [["ES1", "Ecosystems and biodiversity"], ["ES2", "Biogeochemical/nutrient cycles"], ["ES3", "Human effects on ecosystems"], ["ES4", "Pollution and environmental change"], ["ES5", "Resource management and sustainability"], ["ES6", "Sampling and ecological investigation"], ["ES7", "Quantitative environmental data"], ["ES8", "Evaluate environmental solutions and evidence"]], "proj": "Biodiversity enhancement plan", "projd": "survey a site and propose green infrastructure/habitat interventions.", "opps": "Ecological survey; Biodiversity Net Gain; green roofs; sustainable drainage; habitat connectivity"},
+{"name": "MATHEMATICS", "subject": "Mathematics", "geo": 0, "items": [["M1", "Mathematical argument and proof"], ["M2", "Algebra and functions"], ["M3", "Coordinate geometry"], ["M4", "Calculus and rates of change"], ["M5", "Statistics and distributions"], ["M6", "Data interpretation"], ["M7", "Mechanics where applicable"], ["M8", "Mathematical modelling"], ["M9", "Interpret solutions in context"], ["M10", "Evaluate assumptions and limitations"]], "proj": "Development scenario model", "projd": "compare options using density, floor area, demand, costs, accessibility or environmental data.", "opps": "Development modelling; optimisation; statistics; scenario analysis; sensitivity testing"},
+{"name": "COMPUTER SCIENCE", "subject": "Computer Science", "geo": 0, "items": [["CS1", "Computational thinking"], ["CS2", "Algorithms"], ["CS3", "Programming"], ["CS4", "Data structures and representation"], ["CS5", "Computer systems"], ["CS6", "Databases/data management"], ["CS7", "Develop computational solutions"], ["CS8", "Test and evaluate systems"], ["CS9", "Ethical, legal and social implications of computing"]], "proj": "Smart campus", "projd": "analyse sensor or spatial data and create/prototype a computational response to an identified problem.", "opps": "Digital twin; spatial data science; GIS/programming; IoT sensors; AI/urban analytics; data ethics"},
+{"name": "BUSINESS / ECONOMICS", "subject": "Business / Economics", "geo": 0, "items": [["BE1", "Organisational/business objectives"], ["BE2", "Stakeholders and competing interests"], ["BE3", "Revenues, costs and investment"], ["BE4", "Markets and demand"], ["BE5", "Decision-making using quantitative evidence"], ["BE6", "Risk and uncertainty"], ["BE7", "Externalities/social impacts"], ["BE8", "Evaluate strategic alternatives"]], "proj": "Regeneration business case", "projd": "compare alternative uses of a development site against commercial, social and environmental criteria.", "opps": "Development appraisal; land value; cost-benefit analysis; social value; viability; investment decisions"},
+{"name": "ENGLISH", "subject": "English", "geo": 0, "items": [["EN1", "Analyse language/texts critically"], ["EN2", "Understand audience, purpose and context"], ["EN3", "Examine representation and discourse"], ["EN4", "Compare texts and perspectives"], ["EN5", "Undertake research"], ["EN6", "Select and synthesise evidence"], ["EN7", "Construct sophisticated arguments"], ["EN8", "Communicate effectively for different audiences"]], "proj": "Whose place is it?", "projd": "Analyse how a development is represented by the developer, council, press and local community.", "opps": "Consultation communications; discourse analysis; place narratives; pitch writing; communicating complex evidence"},
+{"name": "ART AND DESIGN", "subject": "Art & Design", "geo": 0, "items": [["AD1", "Sustained contextual investigation"], ["AD2", "Research artists/designers and relevant sources"], ["AD3", "Experiment with media and processes"], ["AD4", "Record observations and insights"], ["AD5", "Develop and refine ideas"], ["AD6", "Critically evaluate work"], ["AD7", "Produce a personal and meaningful response"], ["AD8", "Present intentions effectively"]], "proj": "Reimagining a contested place", "projd": "develop a portfolio of visual research leading to a spatial or artistic intervention.", "opps": "Architecture; urban sketching; physical modelling; photography; installation; digital visualisation"},
+{"name": "SOCIOLOGY", "subject": "Sociology", "geo": 0, "items": [["SOC1", "Apply sociological concepts and theories"], ["SOC2", "Examine social differentiation and inequality"], ["SOC3", "Analyse identity and culture"], ["SOC4", "Understand power and social structures"], ["SOC5", "Quantitative research methods"], ["SOC6", "Qualitative research methods"], ["SOC7", "Ethics and research design"], ["SOC8", "Interpret and evaluate sociological evidence"]], "proj": "Who benefits from regeneration?", "projd": "Investigate different groups' perceptions of affordability, belonging, safety or displacement.", "opps": "Community consultation; social inequality mapping; interview design; research ethics; analysing perceptions of place"},
+{"name": "POLITICS / LAW", "subject": "Politics / Law", "geo": 0, "items": [["PL1", "Political institutions and decision-making"], ["PL2", "Democracy and participation"], ["PL3", "Rights and responsibilities"], ["PL4", "Law and public decision-making"], ["PL5", "Competing political perspectives"], ["PL6", "Analyse evidence and arguments"], ["PL7", "Construct reasoned judgements"], ["PL8", "Apply ideas to contemporary issues"]], "proj": "Planning inquiry", "projd": "investigate a contested development and represent stakeholder positions before reaching a justified decision.", "opps": "Mock planning committee; planning law; governance; negotiation; advocacy; public-interest decision-making"}]}
+};
+const CUR_NOTES=[
+ "The codes are mapping codes created for this project, not DfE curriculum codes, so G11 or DT8 is not an official DfE reference.",
+ "The Year 12 subjects are covered by the DfE's GCE AS and A level subject content framework. Individual exam board specifications will differ, so treat these as curriculum and content mapping points rather than a claim that every student will meet each numbered item in Year 12. Ofqual's AS and A level requirements and guidance help separate common subject content from formal assessment requirements.",
+ "For science, the regulatory framework separates subject content, practical requirements and assessment objectives, and the mapping can do the same where useful."];
+const CUR_CONV={y9:"G Geography | DT Design & Technology | S Science | M Mathematics | C Computing | E English | H History | CT Citizenship | AD Art & Design | ML Languages | PE Physical Education",
+ y12:"G Geography | DT Design & Technology | P Physics | CH Chemistry | ES Environmental Science/Biology | M Mathematics | CS Computer Science | BE Business/Economics | EN English | AD Art & Design | SOC Sociology | PL Politics/Law"};
+const CUR_EXAMPLES=[
+ {t:"Flood-resilient housing workshop",y9:"G2 G3 G8 G11 S6 DT1 DT5 DT6 M5",y12:"G1 G2 G7 DT1 DT5 P3 ES4 M8",out:"GIS evidence + tested model + five-slide recommendation"},
+ {t:"Regenerating a town-centre site",y9:"G5 G6 G8 G10 CT4 E5 AD1",y12:"G3 G4 G7 BE2 BE5 SOC2 PL1 EN3",out:"site analysis + stakeholder assessment + spatial proposal + final pitch"}];
+const CUR_MAP={y9:{"A1": "G1", "A2": "G2", "A3": "G3", "A4": "G4", "A5": "G5", "A6": "G6", "A7": "G7", "A8": "G8", "A9": "G9", "A10": "G10", "A11": "G11", "A12": "G12", "B1": "M5", "B2": "M4", "B3": "M2", "B4": "M7", "B5": "M1", "C1": "S9", "C2": "S9", "C3": "S4", "C4": "S10", "C5": "S8", "C6": "S6", "D1": "DT1", "D2": "DT5", "D3": "DT9", "D4": "DT9", "D5": "DT8", "E1": "CT1", "E2": "M1", "E3": "CT8", "F1": "AD4", "F2": "AD6", "G1": "C4", "H1": "E8", "H2": "E7", "I1": "H7", "W1": "", "W2": "", "W3": "G8", "W4": "G5", "W5": "CT8"},y12:{"A1": "G1", "A2": "G2", "A3": "G3", "A4": "G4", "A5": "G5", "A6": "G6", "A7": "G7", "A8": "G8", "A9": "G9", "A10": "AO1", "A11": "AO2", "A12": "AO3", "B1": "G1", "B2": "G1", "B3": "G2", "B4": "G3", "B5": "G1", "B6": "G3", "B7": "G3", "B8": "G3", "C1": "M8", "C2": "M5", "D1": "DT8", "D2": "DT7", "E1": "ES3", "E2": "ES5", "E3": "ES8", "F1": "BE2", "F2": "BE8", "G1": "PL1", "G2": "PL6", "G3": "PL7", "H1": "BE5", "I1": "AD4", "J1": ""}};
+const CUR_SOURCES=[["School curriculum mapping (project document)",""],["Key Stage 3 geography","https://www.gov.uk/government/publications/national-curriculum-in-england-geography-programmes-of-study/national-curriculum-in-england-geography-programmes-of-study"],["A-level geography content","https://dera.ioe.ac.uk/21705/1/GCE_AS_and_A_level_subject_content_for_geography.pdf"]];
+const LINKS={
+re1:["M2 M7 CT2 CT6 E2", "BE2 BE5 BE7 SOC2"],
+re2:["S10 CT6 M7", "BE6 BE8 ES5 ES8 SOC8"],
+re3:["M1 M7 CT2", "BE2 BE3 BE7 M5"],
+ep1:["S2 S3 S4 S5 G2 G9", "ES1 ES5 M8 G1"],
+ep2:["S10 S5 G9", "ES3 ES4 ES6 ES8 M7"],
+ep3:["S6 S4 G3", "P4 P8 ES5"],
+f1:["G1 G5 G8 CT1 CT8 E5 CT4", "G3 AO2 AO3 G2 BE8 PL1 PL4 SOC2 BE7"],
+f2:["G3 G8 S9 DT9", "G1 G2 AO2 ES8 ES5 P4"],
+f3:["G1 G8 G9 CT8 CT3 E4", "G3 AO2 G1 SOC2 PL8"],
+s1:["G1 G2 G5 H7 H1", "G3 G4 G2 BE5"],
+s2:["G1 G2 G9 S10 G8", "G1 G3 ES8"],
+s3:["G1 G7 G9 G8", "G1 G3"],
+s4:["G2 G5 G12 S10", "G1 G2 ES1"],
+s5:["G1 G2 G8", "G3 AO2 G1"],
+s6:["G1 G2 M1", "AO2 G1 BE8"],
+s7:["G1 G6 G8", "G3 AO2 G1 ES8 ES1"],
+s8:["G1 G2 G8 CT8", "AO2 G3 PL1"],
+s9:["G1 G5 G8", "G3 G4 G2 SOC2"],
+s10:["G2 G8 G9 S10", "G1 ES8"],
+g1:["G2 G10 G11 M5 C4", "G1 G7 AO3 CS4"],
+g2:["G2 G3 G12 M7 S4", "G1 G5 G7 AO3 M5"],
+g3:["G2 G8 G9 S10", "G1 G2 AO2 ES8 M8"],
+p1:["G5 G8 G10 CT1 CT4 E5", "G3 AO2 PL1 PL4 BE2"],
+p2:["G5 CT1 CT8 E7 CT4 CT7", "G4 G6 AO2 G3 PL6 PL7 PL1 PL4 EN7 SOC8"],
+p3:["G2 G5 G8 M5 S10 M6", "G1 G7 G2 M8 ES5 ES1"],
+a1:["G8 M5 DT5 AD4 DT1 DT6", "AO2 DT8 DT7 AD4 DT1 DT5 DT6"],
+a2:["G8 DT5 DT9 DT8 DT2 DT10", "AO2 DT8 DT7 DT4 DT6 P3"],
+a3:["G1 DT9 AD6 H7 H3", "G3 G4 DT8 DT9 CH1"],
+q1:["G8 M5 M1 M2 M9", "AO2 M8 BE8 BE5 BE3 M9"],
+q2:["G8 M1 DT9 M9", "AO2 M8 BE8 BE3 CH8"],
+q3:["G5 M1 CT1 CT3", "AO2 BE2 BE8 PL1 BE5 BE7 PL5"],
+l1:["G10 G11 M5 C5", "G7 AO3 G1 CS4"],
+l2:["G10 M4 DT5 C4 S3", "G7 M5 P1 CS4"],
+l3:["G10 G11 DT5 C4 C6 M5", "G7 M8 DT7 DT5 CS7"],
+t1:["G12 S4 S6 S3", "G8 ES8 P1 P8 P9"],
+t2:["S4 S8 DT8 S2 S5", "DT8 ES8 P8 P9 CH6"],
+t3:["G8 S6 DT9 DT6", "AO2 DT8 ES8 P4 CH1"],
+m1:["G8 M5 DT5 AD4 DT7", "AO2 DT7 AD4"],
+m2:["G2 G8 DT5 E7 DT7 M5", "G1 AO2 DT7"],
+m3:["G5 M5 DT5 M6 DT4", "G7 DT7 M8 DT4"],
+o1:["G8 CT1 E8 E5", "AO2 AO3 EN7 EN8"],
+o2:["G1 AD6 E8 E9 AD5", "AO2 AO3 BE8 EN8 AD8"],
+o3:["G2 G8 S4 S1 S5", "G1 AO2 AO3 P8 P9"],
+b1:["G1 G2 G12", "G5 AO1"],
+b2:["G10 G11 G12 S4", "G7 G8 G9 M5"],
+b3:["E8", "G9 EN8"]};
+const NO_CUR=new Set(["guests","gifts"]);
+const PROJ={"y9": {"cohort": "y9", "label": "Year 9", "theme": "Flooding", "title": "Living with Water: How should a flood-prone neighbourhood adapt?", "scenario": "A fictional neighbourhood of approximately **500 homes** lies beside a river. It contains existing housing, a school, shops, roads and undeveloped land. Recent storms have caused surface-water and river flooding. The local authority must decide whether to:", "options": ["protect existing buildings", "adapt or relocate vulnerable uses", "permit carefully designed new development", "create space for water through sustainable drainage and landscape interventions"], "packIntro": "Students receive a common evidence pack containing:", "pack": ["a base map", "contours or simplified LiDAR data", "river and drainage features", "three indicative flood-risk zones", "existing land uses", "photographs of housing types", "a rainfall scenario", "fictional household and property information", "outline costs for adaptation measures"], "commission": "Prepare a flood-resilience plan that protects people and property, works with natural processes, is deliverable and does not simply transfer flooding elsewhere.", "outputs": ["annotated spatial plan", "flood-resilient building or neighbourhood design", "package of environmental measures", "indicative cost and value case", "five-minute presentation to a simulated council resilience panel"], "approach": "A realistic Year 9 workshop should prioritise **hands-on investigation, visual decision-making and a tangible product**. Each workshop below is designed for approximately **35 to 40 minutes**.", "approachList": [], "footer": "The use of short, practical activities is consistent with the wider UWE outreach approach, where KS3 sessions have been connected to Geography, Design and Technology, Mathematics and Science.", "ws": [["Geography", "Where will the water go?", "Students place transparent rainfall and flood overlays on a base map, examine contours or simplified LiDAR shading, identify the catchment and trace likely pathways from higher ground to river and low points. They classify areas as more or less suitable for development.", "Flood-risk and opportunity map with three evidence-based observations.", "G1 G2 G3 G8 G10 G11 G12", "**G1** place studies; **G2** rivers and catchments; **G3** climate; **G8** interacting processes; **G10** maps; **G11** GIS; **G12** geographical data."], ["Urban planning", "Plan, protect or relocate?", "Student teams allocate land-use cards for housing, school, open space, drainage and emergency access. They must avoid the highest-risk land and explain who benefits or loses from their plan.", "Annotated land-use plan and three planning principles.", "G5 G8 G9 CT4 CT6 E5 M5", "**G5**, **G8**, **G9**; **CT4** decision-making; **CT6** competing viewpoints; **E5** argument; **M5** scale."], ["Architecture", "Design a flood-resilient home.", "Students use modular components to test raised floor levels, sacrificial ground-floor space, accessible entrances, safe electrical/service locations and water-resistant materials.", "Small physical model or section drawing with labelled adaptations.", "DT1 DT3 DT4 DT5 DT6 DT8 AD3 AD4 AD5", "**DT1** users; **DT3** specification; **DT4–DT6** design, modelling and materials; **DT8** evaluation; **AD3–AD5** visual development."], ["Real estate", "Which properties are most vulnerable?", "Students compare fictional property cards showing location, type, value, occupants and previous flood history. They decide where limited adaptation funding should go and consider effects on residents, insurance and property value.", "Property-priority table with a justified funding decision.", "M2 M7 CT2 CT6 E2", "**M2** proportion; **M7** data; **CT2** rights and responsibilities; **CT6** viewpoints; **E2** evidence."], ["Environmental performance", "Test a mini catchment.", "Students pour equal amounts of water onto model surfaces representing roofs, paving, grass, permeable paving and planted areas. They measure or compare runoff and test a rain garden or storage feature.", "Runoff results plus two recommended sustainable drainage measures.", "S2 S3 S4 S5 S9 S10 G2 G9", "**S2–S5** investigation and evaluation; **S9** climate/Earth systems; **S10** environmental interactions; **G2**, **G9**."], ["Quantity surveying", "Spend the resilience budget.", "Teams receive a notional **£1 million** and intervention cards, for example raised thresholds, property barriers, permeable surfaces, rain gardens and wetland storage. They select a package within budget.", "Costed resilience package and explanation of priorities.", "M1 M2 M7 M9 DT3 CT6", "**M1** calculation; **M2** proportion; **M7** data; **M9** modelling; **DT3** specification; **CT6** decision-making."]], "discuss": ["Could the fictional neighbourhood be drawn from Tewkesbury and the River Severn, so the evidence pack uses real LiDAR, flood zones and 2007 photographs while the names stay fictional?", "Six workshops of 35 to 40 minutes is about 4 hours on its own, and the current day allows 4 rotations of 30 minutes. Which four run in the rotation, or do teams split into pairs and each pair attends three?", "Real estate and Environmental performance are not yet sections in the builder. Add them (see the One Project tab) or fold them into Quantity surveying and the Thermal camera session?", "The scenario suggests a five-minute presentation; the one-project guidance suggests three minutes plus two of questions for Year 9. Which do we want?", "Where do the support sessions fit: LiDAR in Geography, the thermal camera in Environmental performance, model making in Architecture?"]}, "y12": {"cohort": "y12", "label": "Year 12", "theme": "Urban wetlands", "title": "Wetland City: Can an underused urban site become infrastructure for nature and people?", "scenario": "A low-lying, partly vacant urban site sits beside a stream. It currently includes hard surfaces, poor-quality open space and fragmented habitats. The local authority is considering an urban wetland that could:", "options": ["temporarily store stormwater", "improve water quality", "support biodiversity", "provide public open space", "create walking and learning opportunities", "enable a limited amount of development around its edges"], "context": "The scenario is particularly well aligned with UWE expertise. Internal work already identifies urban greening, biodiversity net gain, protected species, financing, stewardship and long-term management of ecological assets as areas of teaching and professional development. UWE discussions have also considered connections with a wider Wetland City initiative and the ecological, cultural and governance value of urban wetlands.", "commission": "Design an urban wetland that functions as blue-green infrastructure, improves biodiversity and creates an inclusive place, while explaining how it will be financed and maintained.", "outputs": ["wetland masterplan", "habitat and water-management concept", "visitor, access or learning feature", "environmental-performance explanation", "capital and maintenance strategy", "five-minute “Wetland City” pitch"], "approach": "Year 12 workshops should use more complex evidence and should require students to:", "approachList": ["identify assumptions", "interpret uncertainty", "compare alternatives", "justify choices", "acknowledge limitations"], "approach2": "Each workshop can still run for about **40 minutes**, provided students receive a prepared data pack rather than collecting everything from scratch.", "ws": [["Geography", "Blue-green infrastructure and place analysis.", "Students map hydrological connectivity, ecological networks, deprivation, access to green space and competing land uses. They evaluate where benefits and disbenefits may fall.", "GIS suitability map and spatial-justice observation.", "G3 G4 G5 G6 G7 G8 AO1 AO2 AO3 SOC2", "**G3–G8**; **AO1–AO3**; **SOC2**."], ["Urban planning", "Negotiate the wetland masterplan.", "Students use policy, stakeholder and land-use evidence to balance habitat protection, public access, housing, safety and stewardship.", "Masterplan plus planning-policy and stakeholder rationale.", "G3 G4 G5 G6 PL1 PL2 PL3 PL4 PL5 PL6 PL7 PL8 SOC1 SOC2 SOC3 SOC4 SOC5 SOC6 SOC7 SOC8", "**G3–G6**; **PL1–PL8**; **SOC1–SOC8**."], ["Architecture", "Design at the wetland edge.", "Students design a wetland centre, boardwalk, observation structure or housing edge using flood-compatible materials and careful relationships between public and ecologically sensitive spaces.", "Concept plan, section and material strategy.", "DT1 DT2 DT3 DT4 DT5 DT6 DT7 DT8 DT9 DT10 AD1 AD2 AD3 AD4 AD5 AD6 AD7 AD8 ES1 ES2 ES3 ES4 ES5", "**DT1–DT10**; **AD1–AD8**; **ES1–ES5**."], ["Real estate", "Valuing ecosystem services.", "Students identify direct, indirect and non-market benefits such as flood storage, amenity, cooling, health, biodiversity and educational value. They consider which benefits can and cannot credibly be monetised.", "Multi-capital value assessment and recommendation to an investor or council.", "BE2 BE5 BE6 BE7 BE8 ES3 ES4 ES5 ES6 ES7 ES8 SOC2 SOC8", "**BE2**, **BE5–BE8**; **ES3–ES8**; **SOC2**, **SOC8**."], ["Environmental performance", "Biodiversity and water-performance design.", "Students use a simplified baseline habitat sheet and water-quality data to compare alternative wetland layouts and management regimes.", "Environmental-performance scorecard and monitoring indicators.", "ES1 ES2 ES3 ES4 ES5 ES6 ES7 ES8 G5 G6 G7 G8 M5 M6 M7 M8 M9 M10", "**ES1–ES8**; **G5–G8**; **M5–M10**."], ["Quantity surveying", "Costing blue-green infrastructure.", "Students prepare a simple elemental cost plan covering earthworks, water control, planting, paths, structures, monitoring and annual management. They compare a basic and an enhanced scheme.", "Capital and maintenance cost comparison, including one value-engineering proposal.", "BE3 BE5 BE6 BE7 BE8 M6 M8 M9 M10 ES5", "**BE3**, **BE5–BE8**; **M6**, **M8–M10**; **ES5**."]], "discuss": ["The day's theme is flooding. Severn Ham at Tewkesbury, already a site option in the builder, is a floodplain meadow that stores floodwater, so it could anchor Wetland City in a real place.", "Some workshops list whole ranges (PL1–PL8, SOC1–SOC8, DT1–DT10). Would two or three principal codes per workshop make the mapping easier for schools to use?", "The earlier Year 12 plan linked the day to the geography NEA. Could the Geography workshop end with each student drafting an NEA question?", "As with Year 9, six workshops of 40 minutes will not all fit. Which run as expert workshops, and which feed in through the data pack?", "The scenario suggests one five-minute pitch; the one-project guidance adds up to three minutes of questions. With about 24 teams, panels need to run in parallel."]}, "one": {"intro": "The most important design principle is that workshops should not produce six disconnected experiences. Each discipline should answer a different part of the same commission.", "ws": [["Geography", "What is happening here, where, and why?", "Evidence map and spatial findings"], ["Urban planning", "What should happen where, and whose interests must be considered?", "Preferred spatial strategy"], ["Architecture", "What should the buildings or structures be like?", "Design concept or prototype"], ["Real estate", "Who needs it, who benefits and how might value or delivery be affected?", "Demand, value or tenure recommendation"], ["Environmental performance", "Will it work environmentally, and how can performance be demonstrated?", "Test result or performance scorecard"], ["Quantity surveying", "What will it cost, what is affordable and what trade-offs are necessary?", "Costed package or option comparison"]], "questions": ["What is the problem?", "What does the geographical evidence show?", "What spatial strategy are we proposing?", "What will the key buildings, landscape or infrastructure look like?", "How will the proposal perform environmentally?", "Can it be funded, delivered and maintained?"], "products": {"y9": ["one annotated A1 board", "one physical model or prototype", "one cost/value card", "a **three-minute presentation**", "up to **two minutes of questions**"], "y12": ["one evidence-led A1 board or five-slide presentation", "one plan, model or spatial visualisation", "one environmental-performance assessment", "one cost/appraisal table", "a **five-minute presentation**", "up to **three minutes of questions**"]}, "criteria": [["Use of evidence", "Identifies relevant information from maps, tests and workshops", "Interprets evidence critically and acknowledges limitations"], ["Spatial thinking", "Shows a clear and understandable arrangement", "Compares alternatives and justifies a spatial strategy"], ["Design quality", "Creative, usable and clearly communicated", "Context-responsive, technically reasoned and integrated"], ["Environmental performance", "Explains how the proposal helps", "Uses evidence or calculations to assess likely performance"], ["Deliverability", "Stays within the simple budget", "Considers cost, value, phasing, risk and maintenance"], ["Inclusion", "Considers different users", "Examines distributional effects and stakeholder interests"], ["Communication", "Clear, collaborative presentation", "Concise professional argument supported by evidence"]], "secmap": {"Geography": "geo", "Urban planning": "plan", "Architecture": "arch", "Quantity surveying": "qs", "Real estate": "re", "Environmental performance": "ep"}, "newq": {"Real estate": "Who needs it, who benefits and how might value or delivery be affected?", "Environmental performance": "Will it work environmentally, and how can performance be demonstrated?"}}};
+
+const SCHED_ID='sched',IDEAS_ID='ideas';
+const GROUPS=[...new Set(SECTIONS.map(s=>s.group))].concat(['Parking space']);
+const byName=(a,b)=>a.localeCompare(b,'en',{sensitivity:'base'});
+// Subjects are always listed alphabetically; other groups keep their order.
+const allSecs=()=>{const all=SECTIONS.concat(S.customSecs||[]),subj=all.filter(s=>s.group==='Subjects').sort((a,b)=>byName(a.name,b.name));let i=0;return all.map(s=>s.group==='Subjects'?subj[i++]:s);};
+['y9','y12'].forEach(c=>CUR[c].cats.sort((a,b)=>byName(a.subject,b.subject)));
+['y9','y12'].forEach(c=>PROJ[c].ws.sort((a,b)=>byName(a[0],b[0])));PROJ.one.ws.sort((a,b)=>byName(a[0],b[0]));
+const shown=()=>allSecs().filter(s=>!S.hidden[s.id]);
+const EXTRA_NAMES={sched:'Activity schedule',ideas:'Ideas to explore'};
+function removeBtn(id,own){return `<div class="row"><button class="btn ghost" type="button" data-k="rm-${id}" ${own?`data-delsec="${id}"`:`data-rmsec="${id}"`}>${own?'Delete this section':'Remove this section'}</button></div>`;}
+function tplRows(c,id){const t=TEMPLATES[c].find(x=>x.id===id);return t.rows.map(r=>({m:r[0],a:r[1],w:r[2],k:r[3]}));}
+function fresh(){return{curv:2,purged:{},docId:'base',cohort:'y9',picks:{y9:{},y12:{}},notes:{y9:{},y12:{}},custom:{},open:{site:true},tab:'main',deleted:{},hidden:{},customSecs:[],links:{y9:{},y12:{}},drop:{y9:{},y12:{}},curOwn:{y9:[],y12:[]},
+  sched:{y9:{tpl:'rot',start:'09:45',end:'14:15',rows:tplRows('y9','rot')},y12:{tpl:'jig',start:'09:45',end:'14:15',rows:tplRows('y12','jig')}},
+  calc:{y9:{s:120,t:5,r:4,p:3,q:2},y12:{s:120,t:8,r:3,p:4,q:2}},ideas:IDEAS.map((t,i)=>({id:'i'+i,t,who:''}))};}
+let EMBEDDED=null;
+function load(){
+  try{EMBEDDED=JSON.parse(document.getElementById('saved-state').textContent);}catch(e){}
+  if(EMBEDDED)return Object.assign(fresh(),{curv:1},EMBEDDED);
+  try{const v=localStorage.getItem('flood-brief-base');if(v)return Object.assign(fresh(),{curv:1},JSON.parse(v));}catch(e){}
+  return fresh();
+}
+let S=load();
+(function migrate(){if(S.curv===2)return;
+  const tr=(c,a)=>{const out=[];(a||[]).forEach(x=>{const n=/^X\d+$/.test(x)?x:CUR_MAP[c][x];if(n&&!out.includes(n))out.push(n);});return out;};
+  ['y9','y12'].forEach(c=>{Object.keys(S.links[c]||{}).forEach(k=>S.links[c][k]=tr(c,S.links[c][k]));Object.keys(S.drop[c]||{}).forEach(k=>S.drop[c][k]=tr(c,S.drop[c][k]));
+    Object.values(S.custom||{}).forEach(l=>l.forEach(o=>{if(o.links)o.links[c]=tr(c,o.links[c]);}));});
+  S.curv=2;})();
+S.tab='main';if(S.hidden)delete S.hidden.sofar;
+S.customSecs=(S.customSecs||[]).filter(s=>!(['real estate','environmental performance'].includes((s.name||'').toLowerCase())&&!(S.custom[s.id]||[]).length));
+let fileHandle=null,cleanSnap='';
+const HOSTED=window.self!==window.top;
+function snap(){const c=Object.assign({},S);delete c.open;delete c.cohort;delete c.tab;return JSON.stringify(c);}
+function isDirty(){return cleanSnap!==''&&snap()!==cleanSnap;}
+function showDirty(){const el=document.getElementById('savestate');if(!HOSTED)el.textContent=isDirty()?'Unsaved changes':(fileHandle?'Saved to '+fileHandle.name:'');}
+function save(){if(!EMBEDDED){try{localStorage.setItem('flood-brief-base',JSON.stringify(S));}catch(e){}}showDirty();}
+window.addEventListener('beforeunload',e=>{if(!HOSTED&&isDirty()){e.preventDefault();e.returnValue='';}});
+// On save, deleted items are removed for good: no more "Put back".
+function purgeDeleted(){S.purged=S.purged||{};
+  Object.keys(S.deleted).forEach(id=>{if(S.purged[id])return;
+    ['y9','y12'].forEach(c=>{if(S.picks[c])delete S.picks[c][id];});
+    let own=false;Object.keys(S.custom).forEach(k=>{const n=S.custom[k].length;S.custom[k]=S.custom[k].filter(o=>o.id!==id);if(S.custom[k].length!==n)own=true;});
+    if(own)delete S.deleted[id];else S.purged[id]=true;});}
+function fileHtml(){purgeDeleted();const json=JSON.stringify(S).replace(/</g,'\\u003c');
+  return PRISTINE.replace(/(<script id="saved-state" type="application\/json">)[\s\S]*?(<\/script>)/,(m,a,b)=>a+json+b);}
+function suggested(){return 'flood-day-brief-'+new Date().toISOString().slice(0,10)+'.html';}
+async function writeTo(h){const w=await h.createWritable();await w.write(fileHtml());await w.close();render();cleanSnap=snap();EMBEDDED=EMBEDDED||{};showDirty();}
+async function saveAs(){
+  if(window.showSaveFilePicker){
+    try{const h=await window.showSaveFilePicker({suggestedName:fileHandle?fileHandle.name:suggested(),types:[{description:'Web page',accept:{'text/html':['.html']}}]});
+      fileHandle=h;await writeTo(h);return;}
+    catch(e){if(e&&e.name==='AbortError')return;}
+  }
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([fileHtml()],{type:'text/html'}));a.download=suggested();document.body.appendChild(a);a.click();a.remove();
+  render();cleanSnap=snap();showDirty();document.getElementById('savestate').textContent='Saved to your Downloads folder';
+}
+async function saveFile(){if(fileHandle){try{await writeTo(fileHandle);return;}catch(e){}}await saveAs();}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const cname=()=>S.cohort==='y9'?'Year 9':'Year 12';
+const picks=()=>S.picks[S.cohort];
+const notes=()=>S.notes[S.cohort];
+function optsOf(sec){return sec.opts.concat(S.custom[sec.id]||[]).filter(o=>!S.deleted[o.id]);}
+const canDelete=()=>true;
+function leadOf(sec){return optsOf(sec).find(o=>picks()[o.id]==='lead');}
+function maybesOf(sec){return optsOf(sec).filter(o=>picks()[o.id]==='maybe');}
+function curOf(sec){return sec.opts.find(o=>o.cur);}
+function toMin(s){const [h,m]=String(s).split(':').map(Number);return h*60+m;}
+function toT(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
+function curCats(){const base=CUR[S.cohort].cats,own=S.curOwn[S.cohort];return own.length?base.concat([{name:'ADDED BY YOU',items:own.map(x=>[x.code,x.t])}]):base;}
+function curIdx(){const m={};let n=0;curCats().forEach(c=>c.items.forEach(([code,t])=>{m[code]={t,geo:!!c.geo,cat:c.name,n:n++};}));return m;}
+const hasCur=s=>!NO_CUR.has(s.id);
+const cIdx=()=>S.cohort==='y9'?0:1;
+function sug(o){if(o.own)return (o.links&&o.links[S.cohort])||[];const l=LINKS[o.id];return l?l[cIdx()].split(' '):[];}
+function effective(sec){const c=S.cohort,idx=curIdx(),l=leadOf(sec),set=new Set([...(l?sug(l):[]),...(S.links[c][sec.id]||[])]);(S.drop[c][sec.id]||[]).forEach(x=>set.delete(x));
+  return [...set].filter(x=>idx[x]).sort((a,b)=>idx[a].n-idx[b].n);}
+function codeTag(code,idx){const i=idx[code];return i?`<span class="code ${i.geo?'geo':''}" title="${esc(i.t)}">${esc(code)}</span>`:'';}
+function curOpts(on){return curCats().map(c=>`<optgroup label="${esc(c.name)}">${c.items.map(([code,t])=>`<option value="${esc(code)}" ${on.includes(code)?'disabled':''}>${on.includes(code)?'✓ ':''}${esc(code)}  ${esc(t)}</option>`).join('')}</optgroup>`).join('');}
+function ownLinks(sec,o){
+  const idx=curIdx(),on=sug(o).filter(x=>idx[x]).sort((a,b)=>idx[a].n-idx[b].n);
+  const chips=on.map(code=>`<span class="cc ${idx[code].geo?'geo':''}"><b>${esc(code)}</b> ${esc(idx[code].t)}<button class="chipx" type="button" data-k="ox-${o.id}-${esc(code)}" data-optx="${esc(code)}" data-oid="${o.id}" data-sec="${sec.id}" aria-label="Remove ${esc(code)}">×</button></span>`).join('');
+  return `<div class="ownlinks">${on.length?`<div class="curchips">${chips}</div>`:''}<label class="lbl">Curriculum links for ${cname()}<select data-optadd="${o.id}" data-sec="${sec.id}" data-k="oa-${o.id}" aria-label="Link this idea to a curriculum point"><option value="">Add a curriculum link…</option>${curOpts(on)}</select></label></div>`;
+}
+function curBox(sec){
+  if(!hasCur(sec))return '';
+  const idx=curIdx(),on=effective(sec),l=leadOf(sec);
+  const opts=curOpts(on);
+  const chips=on.map(code=>`<span class="cc ${idx[code].geo?'geo':''}"><b>${esc(code)}</b> ${esc(idx[code].t)}<button class="chipx" type="button" data-k="cx-${sec.id}-${esc(code)}" data-curx="${esc(code)}" data-sec="${sec.id}" aria-label="Remove ${esc(code)}">×</button></span>`).join('');
+  const hint=on.length&&!on.some(x=>idx[x].geo)?'<p class="nogeo">No geography link yet. Geography is the priority.</p>':'';
+  return `<div class="curbox"><label class="lbl">School curriculum links for ${cname()}<select data-curadd="${sec.id}" data-k="ca-${sec.id}" aria-label="Add a curriculum link"><option value="">Add a curriculum link…</option>${opts}</select></label>
+  ${on.length?`<div class="curchips">${chips}</div>`:`<p class="small muted">${l?'No links yet. Choose one above.':'Choose a Lead idea to bring in its suggested links, or add one above.'}</p>`}${hint}</div>`;
+}
+function optHTML(sec,o){
+  const st=picks()[o.id]||'';const txt=S.cohort==='y9'?o.y9:o.y12;
+  const buttons=[['lead','Lead idea'],['maybe','Maybe'],['no','Not now']].map(([v,l])=>`<button type="button" data-k="p-${o.id}-${v}" data-pick="${o.id}" data-sec="${sec.id}" data-v="${v}" aria-pressed="${st===v}">${l}</button>`).join('')+(canDelete(sec,o)?`<button class="del" type="button" data-k="del-${o.id}" data-delopt="${o.id}">Delete</button>`:'');
+  return `<article class="opt ${st}"><h3>${esc(o.t)}${o.cur?'<span class="chip cur">In current brief</span>':''}${o.own?'<span class="chip">Added</span>':''}</h3>
+  <div class="fill"><p>${esc(o.d)}</p>
+  ${txt?`<p><span class="lab">For ${cname()}:</span> ${esc(txt)}</p>`:''}
+  ${o.good?`<p><span class="lab">Works for:</span> ${esc(o.good)}</p>`:''}
+  ${o.w?`<p><span class="lab">Watch out:</span> ${esc(o.w)}</p>`:''}
+  ${o.n?`<p class="muted small"><span class="lab">Needs:</span> ${esc(o.n)}</p>`:''}
+  ${o.src?`<p class="small"><a href="${esc(o.src[1])}">${esc(o.src[0])}</a></p>`:''}
+  ${o.own&&hasCur(sec)?ownLinks(sec,o):''}
+  ${!o.own&&sug(o).length?(()=>{const idx=curIdx();return `<p class="small curline"><span class="lab">Curriculum:</span> ${sug(o).filter(x=>idx[x]).sort((a,b)=>idx[a].n-idx[b].n).map(x=>codeTag(x,idx)).join('')}</p>`;})():''}</div>
+  <div class="acts">${buttons}</div></article>`;
+}
+function sumRight(sec){
+  const l=leadOf(sec),m=maybesOf(sec).length;
+  const n=hasCur(sec)?effective(sec).length:0,c=n?`<span class="chip cur">${n} curriculum link${n===1?'':'s'}</span>`:'';
+  if(l)return `<span class="chip lead">Lead: ${esc(l.t)}</span>${m?`<span class="chip maybe">${m} maybe</span>`:''}${c}`;
+  return `${m?`<span class="chip maybe">${m} maybe</span>`:''}${c}<span class="chip">${optsOf(sec).length} options</span>`;
+}
+function delRow(sec){const g=sec.opts.concat(S.custom[sec.id]||[]).filter(o=>S.deleted[o.id]&&!(S.purged||{})[o.id]);
+  return g.length?`<div class="delrow"><span class="small muted">Deleted:</span>${g.map(o=>`<button class="btn ghost" type="button" data-k="ud-${o.id}" data-undel="${o.id}">Put back: ${esc(o.t)}</button>`).join('')}</div>`:'';}
+function secHTML(sec){
+  let cards;
+  if(sec.grouped){const groups=[...new Set(sec.opts.map(o=>o.g))];
+    cards=groups.filter(g=>sec.opts.some(o=>o.g===g&&!S.deleted[o.id])).map(g=>`<p class="gtitle">${esc(g)}</p><div class="opts">${sec.opts.filter(o=>o.g===g&&!S.deleted[o.id]).map(o=>optHTML(sec,o)).join('')}</div>`).join('');
+    const own=(S.custom[sec.id]||[]).filter(o=>!S.deleted[o.id]);if(own.length)cards+=`<p class="gtitle">Added by you</p><div class="opts">${own.map(o=>optHTML(sec,o)).join('')}</div>`;
+  } else cards=`<div class="opts">${optsOf(sec).map(o=>optHTML(sec,o)).join('')}</div>`;
+  const ph=sec.id==='site'?['Site name','Why it could work, and what to watch out for']:['Your idea','What would students do?'];
+  return `<details class="sec" data-sec="${sec.id}" id="sec-${sec.id}" ${S.open[sec.id]?'open':''}><summary><i class="car"></i><div class="sum-t"><h2>${esc(sec.name)}</h2><span class="muted">${esc(sec.q)}</span></div><div class="sum-r">${sumRight(sec)}</div></summary>
+  <div class="body">${curBox(sec)}${cards}${delRow(sec)}
+   <div class="add ${hasCur(sec)?'withcur':''}"><input type="text" id="add-t-${sec.id}" placeholder="${ph[0]}" aria-label="${ph[0]}"><input type="text" id="add-d-${sec.id}" placeholder="${ph[1]}" aria-label="${ph[1]}">${hasCur(sec)?`<select id="add-c-${sec.id}" aria-label="Link to a curriculum point"><option value="">Curriculum link (optional)…</option>${curOpts([])}</select>`:''}<button class="btn" type="button" data-k="add-${sec.id}" data-add="${sec.id}">${sec.id==='site'?'Add a site':'Add an idea'}</button></div>
+   <label class="lbl">Notes for ${cname()}<textarea data-note="${sec.id}" placeholder="Questions, who could lead this, how it might change">${esc(notes()[sec.id])}</textarea></label>
+   ${removeBtn(sec.id,sec.own)}
+  </div></details>`;
+}
+function schedHTML(){
+  const c=S.sched[S.cohort],tpl=TEMPLATES[S.cohort].find(t=>t.id===c.tpl);
+  let t=toMin(c.start);const avail=toMin(c.end)-t,used=c.rows.reduce((a,r)=>a+Number(r.m||0),0),diff=avail-used;
+  const rows=c.rows.map((r,i)=>{const st=toT(t);t+=Number(r.m||0);const kinds=[['a','Welcome and admin'],['t','Workshop'],['s','Team work'],['p','Presenting'],['b','Break or move']];
+    return `<tr><td class="time">${st}</td><td><input type="number" min="0" step="5" value="${r.m}" data-row="${i}" data-f="m" aria-label="Minutes"></td><td><input type="text" value="${esc(r.a)}" data-row="${i}" data-f="a" aria-label="Activity"></td><td><input type="text" value="${esc(r.w)}" data-row="${i}" data-f="w" aria-label="Where"></td><td><select data-row="${i}" data-f="k" aria-label="Type">${kinds.map(([v,l])=>`<option value="${v}" ${r.k===v?'selected':''}>${l}</option>`).join('')}</select></td><td style="white-space:nowrap"><button class="tiny" type="button" data-k="up-${i}" data-move="${i}" data-d="-1" aria-label="Move up">↑</button> <button class="tiny" type="button" data-k="dn-${i}" data-move="${i}" data-d="1" aria-label="Move down">↓</button> <button class="tiny" type="button" data-k="rm-${i}" data-rm="${i}" aria-label="Remove">×</button></td></tr>`;}).join('');
+  const status=diff<0?`<span class="status bad">${-diff} minutes over</span>`:diff>0?`<span class="status spare">${diff} minutes spare</span>`:`<span class="status ok">Fits exactly</span>`;
+  const bar=c.rows.map(r=>`<i class="k-${esc(r.k)}" style="flex:${Math.max(1,Number(r.m)||0)} 0 0" title="${esc(r.a)}, ${Number(r.m)||0} minutes"></i>`).join('');
+  const cal=S.calc[S.cohort],teams=Math.ceil(cal.s/Math.max(1,cal.t)),per=Math.ceil(teams/Math.max(1,cal.r)),mins=per*(Number(cal.p)+Number(cal.q)),all=teams*(Number(cal.p)+Number(cal.q));
+  const f=(k,l)=>`<label class="lbl">${l}<input type="number" min="1" value="${cal[k]}" data-calc="${k}" aria-label="${l}"></label>`;
+  return `<details class="sec" data-sec="sched" id="sec-sched" ${S.open.sched?'open':''}><summary><i class="car"></i><div class="sum-t"><h2>Activity schedule</h2><span class="muted">How could the ${toT(toMin(c.start))} to ${toT(toMin(c.end))} day run?</span></div><div class="sum-r"><span class="chip">${esc(tpl?tpl.name:'Custom')}</span>${status.replace('status','chip status')}</div></summary>
+  <div class="body" id="sched">
+   <div class="row" style="align-items:flex-end;gap:16px">
+    <label class="lbl">Start from a format<select id="tpl" data-k="tpl">${TEMPLATES[S.cohort].map(t=>`<option value="${t.id}" ${t.id===c.tpl?'selected':''}>${esc(t.name)}</option>`).join('')}</select></label>
+    <label class="lbl">Day starts<input type="time" id="st" value="${c.start}"></label>
+    <label class="lbl">Day ends<input type="time" id="en" value="${c.end}"></label>
+    <p>${status} <span class="muted small">${used} of ${avail} minutes planned</span></p>
+   </div>
+   ${tpl?`<p class="muted small">${esc(tpl.why)} Choosing a different format replaces the rows below.</p>`:''}
+   <div class="bar" aria-hidden="true">${bar}</div>
+   <div class="legend"><span><i class="k-a"></i>Welcome and admin</span><span><i class="k-t"></i>Workshop</span><span><i class="k-s"></i>Team work</span><span><i class="k-p"></i>Presenting</span><span><i class="k-b"></i>Break or move</span></div>
+   <div class="scroll"><table><tr><th>Starts</th><th>Mins</th><th>Activity</th><th>Where</th><th>Type</th><th></th></tr>${rows}</table></div>
+   <div class="row"><button class="btn" type="button" data-k="addrow" id="addrow">Add a row</button></div>
+   <h3>Will the presentations fit?</h3>
+   <div class="calc">${f('s','Students')}${f('t','Team size')}${f('r','Rooms')}${f('p','Pitch mins')}${f('q','Question mins')}</div>
+   <p><b>${teams} teams</b>, up to ${per} per room, taking <b>${mins} minutes</b> in parallel. All together in one room would take ${all} minutes.</p>
+   <label class="lbl">Notes for ${cname()}<textarea data-note="sched" placeholder="What would you change about this day?">${esc(notes().sched)}</textarea></label>
+   ${removeBtn('sched')}
+  </div></details>`;
+}
+function ideasHTML(){
+  return `<details class="sec" data-sec="ideas" id="sec-ideas" ${S.open.ideas?'open':''}><summary><i class="car"></i><div class="sum-t"><h2>Ideas to explore</h2><span class="muted">Anything that does not fit elsewhere</span></div><div class="sum-r"><span class="chip">${S.ideas.length} ideas</span></div></summary>
+  <div class="body"><ul class="ideas">${S.ideas.map((x,i)=>`<li><input type="text" value="${esc(x.t)}" data-idea="${i}" data-f="t" aria-label="Idea"><input type="text" value="${esc(x.who)}" placeholder="Who could check?" data-idea="${i}" data-f="who" aria-label="Owner"><button class="tiny" type="button" data-k="ix-${i}" data-delidea="${i}" aria-label="Delete idea">×</button></li>`).join('')}</ul>
+  <div class="row"><button class="btn" type="button" data-k="addidea" id="addidea">Add an idea</button></div>${removeBtn('ideas')}</div></details>`;
+}
+function render(){
+  let key=document.activeElement&&document.activeElement.dataset?document.activeElement.dataset.k:null;
+  $('tab-y9').setAttribute('aria-pressed',S.cohort==='y9');$('tab-y12').setAttribute('aria-pressed',S.cohort==='y12');
+  const vis=shown(),withLead=vis.filter(leadOf).length;
+  $('sofar-panel').hidden=S.tab!=='sofar';$('panel-main').hidden=S.tab!=='main';$('overview-panel').hidden=S.tab!=='overview';
+  const PT=['py9','py12','one'].includes(S.tab);$('proj-panel').hidden=!PT;if(PT)renderProj();
+  ['py9','py12','one'].forEach(k=>$('tabbtn-'+k).setAttribute('aria-selected',S.tab===k));
+  document.querySelector('.seg').hidden=PT;
+  $('tabbtn-overview').setAttribute('aria-pressed',S.tab==='overview');if(S.tab==='overview')renderOverview();
+  $('tabbtn-main').setAttribute('aria-selected',S.tab==='main');$('tabbtn-sofar').setAttribute('aria-selected',S.tab==='sofar');document.body.classList.toggle('on-ov',S.tab==='overview');
+  $('openall').hidden=$('closeall').hidden=S.tab!=='main';
+  $('sf-title').textContent=`The brief so far: ${cname()} (${withLead} of ${vis.length} areas have a lead idea)`;
+  const c=S.sched[S.cohort],tpl=TEMPLATES[S.cohort].find(t=>t.id===c.tpl);
+  $('sofar').innerHTML=`<table><tr><th>Area</th><th>Lead idea</th><th>Also considering</th><th>Curriculum links</th><th>In current brief</th></tr>${vis.map(s=>{const l=leadOf(s),m=maybesOf(s),cu=curOf(s),idx=curIdx(),eff=hasCur(s)?effective(s):[];
+    return `<tr><td><button type="button" data-k="go-${s.id}" data-go="${s.id}">${esc(s.name)}</button></td><td>${l?`<span class="chip lead">${esc(l.t)}</span>`:'<span class="muted">Open</span>'}</td><td>${m.map(x=>`<span class="chip maybe">${esc(x.t)}</span>`).join(' ')}</td><td>${eff.map(x=>codeTag(x,idx)).join('')}</td><td class="muted small">${cu?esc(cu.t):''}</td></tr>`;}).join('')}${S.hidden.sched?'':`<tr><td><button type="button" data-k="go-sched" data-go="sched">Activity schedule</button></td><td colspan="3">${esc(tpl?tpl.name:'')}</td><td class="muted small">${esc(TEMPLATES[S.cohort][0].name.replace(' (current brief)',''))}</td></tr>`}</table>`;
+  renderCur(vis);
+  let html='';
+  GROUPS.forEach(g=>{
+    const list=vis.filter(s=>s.group===g);
+    const sched=g==='The day'&&!S.hidden.sched, ideas=g==='Parking space'&&!S.hidden.ideas;
+    if(!list.length&&!sched&&!ideas)return;
+    html+=`<p class="grp">${esc(g)}</p>`;
+    if(sched)html+=schedHTML();
+    list.forEach(s=>html+=secHTML(s));
+    if(ideas)html+=ideasHTML();
+  });
+  $('board').innerHTML=html;
+  const gone=SECTIONS.filter(s=>S.hidden[s.id]).map(s=>[s.id,s.name]).concat(Object.keys(EXTRA_NAMES).filter(k=>S.hidden[k]).map(k=>[k,EXTRA_NAMES[k]]));
+  $('removed').innerHTML=gone.length?`<h3>Removed sections</h3><div class="row" style="margin-top:6px">${gone.map(([id,n])=>`<button class="btn" type="button" data-k="back-${id}" data-restore="${id}">Put back: ${esc(n)}</button>`).join('')}</div>`:'';
+  if(!$('ns-group').options.length){$('ns-group').innerHTML=GROUPS.map(g=>`<option ${g==='Subjects'?'selected':''}>${esc(g)}</option>`).join('');}
+  save();
+  if(key){const el=document.querySelector(`[data-k="${key}"]`);if(el)el.focus({preventScroll:true});}
+}
+let OV_SUB='';
+function codeList(s,idx,used){return s.split(' ').map(x=>`<span class="code ${idx[x]&&idx[x].geo?'geo':''} ${used.has(x)?'used':''}" title="${esc(idx[x]?idx[x].t:'')}">${esc(x)}</span>`).join('');}
+function renderOverview(){
+  const c=S.cohort,cats=CUR[c].cats,idx=curIdx();
+  const used=new Set();shown().forEach(s=>{if(hasCur(s))effective(s).forEach(x=>used.add(x));});
+  $('ov-year').value=c;
+  if(OV_SUB&&!cats.some(x=>x.subject===OV_SUB))OV_SUB='';
+  $('ov-sub').innerHTML='<option value="">All subjects</option>'+cats.map(x=>`<option value="${esc(x.subject)}" ${x.subject===OV_SUB?'selected':''}>${esc(x.subject)}</option>`).join('');
+  const list=OV_SUB?cats.filter(x=>x.subject===OV_SUB):cats;
+  $('ov-caption').textContent=`Showing ${OV_SUB||'all subjects'} for ${cname()}. ${c==='y9'?'Key Stage 3 mapping points.':'AS and A level curriculum and content mapping points.'} Shaded codes are already linked in the brief for ${cname()}.`;
+  $('ov-table').innerHTML=`<table class="ovt"><thead><tr><th>Subject</th><th>${c==='y9'?'Curriculum points for mapping':'Curriculum and content points for mapping'}</th><th>Likely school project or application</th><th>Cross-curriculum day opportunities</th></tr></thead><tbody>${list.map(x=>`<tr><td><b>${esc(x.subject)}</b></td><td><ul class="ovpts">${x.items.map(([code,tx])=>`<li><span class="code ${x.geo?'geo':''} ${used.has(code)?'used':''}">${esc(code)}</span> ${esc(tx)}</li>`).join('')}</ul></td><td><b>${esc(x.proj)}</b>${x.projd?' '+esc(x.projd):''}</td><td>${esc(x.opps)}</td></tr>`).join('')}</tbody></table>`;
+  $('ov-notes').innerHTML=CUR_NOTES.map(n=>`<li>${esc(n)}</li>`).join('');
+  $('ov-conv').innerHTML=['y9','y12'].map(k=>`<p class="small"><b>${k==='y9'?'Year 9 / KS3':'Year 12'}:</b> ${esc(CUR_CONV[k])}</p>`).join('');
+  const i9=curIdxFor('y9'),i12=curIdxFor('y12');
+  $('ov-ex').innerHTML=CUR_EXAMPLES.map(e=>`<div class="ovex"><b>${esc(e.t)}</b><p class="small">Year 9: ${codeList(e.y9,i9,c==='y9'?used:new Set())}</p><p class="small">Year 12: ${codeList(e.y12,i12,c==='y12'?used:new Set())}</p><p class="small muted">Output: ${esc(e.out)}</p></div>`).join('');
+}
+function md(s){return esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>');}
+function curText(s,c){const idx=curIdxFor(c);return esc(s.replace(/\*\*/g,'')).replace(/\b(AO|SOC|[A-Z]{1,2})(\d{1,2})\b/g,(m)=>idx[m]?`<span class="code ${idx[m].geo?'geo':''}" title="${esc(idx[m].t)}">${m}</span>`:m);}
+function wsSec(name){const id=PROJ.one.secmap[name];if(id)return allSecs().find(s=>s.id===id&&!S.hidden[s.id]);return allSecs().find(s=>s.name.toLowerCase()===name.toLowerCase()&&!S.hidden[s.id]);}
+function wsLink(name){const s=wsSec(name);return s?`<button class="btn ghost small" type="button" data-k="wg-${esc(name)}" data-go="${s.id}">Open the ${esc(s.name)} section</button>`:`<button class="btn small" type="button" data-k="wa-${esc(name)}" data-addws="${esc(name)}">Add ${esc(name)} as a section</button>`;}
+const QFOR={"Geography":2,"Urban planning":3,"Architecture":4,"Real estate":6,"Environmental performance":5,"Quantity surveying":6};
+function noteBox(k,label){return `<label class="lbl pnote">${label}<textarea data-tabnote="${k}" placeholder="Ideas, questions, who could lead which part">${esc((S.tabNotes||{})[k]||'')}</textarea></label>`;}
+let CEDIT=null;
+const prods=c=>(S.products&&S.products[c])||PROJ.one.products[c].map(x=>x.replace(/\*\*/g,''));
+const crits=()=>S.criteria||PROJ.one.criteria.map(r=>r.slice());
+function setProds(c,l){S.products=S.products||{};S.products[c]=l;}
+function renderProj(){
+  const k=S.tab,el=$('proj-panel');
+  if(k==='one'){const o=PROJ.one;
+    el.innerHTML=`<section class="panel"><h2>Making subject workshops work as one project</h2>
+    <p class="lead">${md(o.intro)}</p>
+    <div class="scroll"><table class="ovt"><thead><tr><th>Workshop</th><th>Question answered</th><th>Evidence handed to the student team</th><th>In this builder</th></tr></thead><tbody>
+    ${o.ws.map(([w,q,e])=>`<tr><td><b>${esc(w)}</b></td><td>${esc(q)}</td><td>${esc(e)}</td><td>${wsLink(w)}</td></tr>`).join('')}</tbody></table></div>
+    <h3>Suggested common presentation structure</h3><p>Every group should answer the same six questions:</p>
+    <ol class="six">${o.questions.map(q=>`<li><b>${esc(q)}</b></li>`).join('')}</ol>
+    <h3>Recommended final products by cohort</h3>
+    <div class="two">${['y9','y12'].map(c=>`<div class="pcard"><h4>${c==='y9'?'Year 9':'Year 12'}</h4>
+      <div class="plist">${prods(c).map((x,i)=>`<div class="prow"><input type="text" value="${esc(x)}" data-prod="${c}" data-i="${i}" data-k="pr-${c}-${i}" aria-label="${c==='y9'?'Year 9':'Year 12'} product ${i+1}"><button class="btn ghost small" type="button" data-proddel="${c}" data-i="${i}">Delete</button></div>`).join('')}</div>
+      <div class="prow addp"><input type="text" id="addp-${c}" placeholder="Add another product" aria-label="Add another ${c==='y9'?'Year 9':'Year 12'} product"><button class="btn small" type="button" data-prodadd="${c}">Add</button></div>
+      <p class="pprint">${prods(c).map(x=>esc(x)).join('<br>')}</p></div>`).join('')}</div>
+    <h3>Suggested assessment criteria</h3>
+    <div class="scroll"><table class="ovt"><thead><tr><th>Criterion</th><th>Year 9 emphasis</th><th>Year 12 emphasis</th><th class="noprint"></th></tr></thead><tbody>${crits().map((r,i)=>CEDIT===i?`<tr class="cedit"><td><input type="text" id="ce-0" value="${esc(r[0])}" aria-label="Criterion"></td><td><textarea id="ce-1" aria-label="Year 9 emphasis">${esc(r[1])}</textarea></td><td><textarea id="ce-2" aria-label="Year 12 emphasis">${esc(r[2])}</textarea></td><td class="cbtns noprint"><button class="btn small" type="button" data-csave="${i}">Save</button><button class="btn ghost small" type="button" data-ccancel="1">Cancel</button></td></tr>`
+      :`<tr><td><b>${esc(r[0])}</b></td><td>${esc(r[1])}</td><td>${esc(r[2])}</td><td class="cbtns noprint"><button class="btn ghost small" type="button" data-cmod="${i}">Modify</button><button class="btn ghost small" type="button" data-cdel="${i}">Delete</button></td></tr>`).join('')}
+      <tr class="noprint cadd"><td><input type="text" id="ca-0" placeholder="New criterion" aria-label="New criterion"></td><td><textarea id="ca-1" placeholder="Year 9 emphasis" aria-label="Year 9 emphasis for new criterion"></textarea></td><td><textarea id="ca-2" placeholder="Year 12 emphasis" aria-label="Year 12 emphasis for new criterion"></textarea></td><td class="cbtns"><button class="btn small" type="button" data-cadd="1">Add</button></td></tr></tbody></table></div>
+    ${noteBox('one','Colleagues\' notes on bringing the workshops together')}</section>`;return;}
+  const p=PROJ[k==='py9'?'y9':'y12'],c=p.cohort;
+  el.innerHTML=`<section class="panel">
+   <p class="eyebrow">${esc(p.label)} · Scenario: ${esc(p.theme)}</p>
+   <h2 class="ptitle">${esc(p.title)}</h2>
+   <div class="two">
+    <div><h3>Scenario</h3><p>${md(p.scenario)}</p><ul>${p.options.map(x=>`<li>${md(x)}</li>`).join('')}</ul>${p.context?`<p class="small muted">${md(p.context)}</p>`:''}</div>
+    <div>${p.pack?`<h3>Evidence pack</h3><p>${md(p.packIntro)}</p><div class="chips">${p.pack.map(x=>`<span class="chip">${esc(x)}</span>`).join('')}</div>`:''}
+     <div class="callout"><h3>Student commission</h3><p>${md(p.commission)}</p></div>
+     <h3>Final output</h3><ul>${p.outputs.map(x=>`<li>${md(x)}</li>`).join('')}</ul></div>
+   </div>
+   <h3>${esc(p.label)} workshops</h3>
+   <p>${md(p.approach)}</p>${p.approachList.length?`<ul class="inline">${p.approachList.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:''}${p.approach2?`<p>${md(p.approach2)}</p>`:''}
+   <div class="wsgrid">${p.ws.map(([w,a,d,o,codes,txt])=>`<article class="wscard"><p class="eyebrow">${esc(w)}</p><h4>${esc(a)}</h4><p>${md(d)}</p>
+     <p><span class="lab">Output for the final presentation:</span> ${md(o)}</p>
+     <p class="small"><span class="lab">Principal curriculum links:</span> ${curText(txt,c)}</p>
+     <div class="row">${wsLink(w)}</div></article>`).join('')}</div>
+   ${p.footer?`<p class="small muted">${md(p.footer)}</p>`:''}
+   <p class="small muted">Hover over a code to see the curriculum point. The full lists are in Overview of school curriculum.</p>
+   ${noteBox(k,'Colleagues\' notes on the '+p.label+' project')}</section>`;
+}
+function curIdxFor(c){const m={};CUR[c].cats.forEach(k=>k.items.forEach(([code,t])=>m[code]={t,geo:!!k.geo}));return m;}
+function renderCur(vis){
+  $('curnote').textContent=CUR[S.cohort].note+' Links are suggestions for teachers to confirm against their own scheme of work.';
+  $('pt-title').textContent=`Add a curriculum point for ${cname()}`;
+  $('ownpts').innerHTML=S.curOwn[S.cohort].map(x=>`<li><span class="code">${esc(x.code)}</span> ${esc(x.t)} <button class="tiny" type="button" data-k="pd-${esc(x.code)}" data-delpt="${esc(x.code)}" aria-label="Delete ${esc(x.code)}">×</button></li>`).join('');
+  $('cursrc').innerHTML='Curriculum sources: '+CUR_SOURCES.map(([n,u])=>u?`<a href="${esc(u)}">${esc(n)}</a>`:esc(n)).join(', ')+'. A revised national curriculum is due in 2027, for first teaching in September 2028.';
+}
+function go(id){S.tab='main';S.open[id]=true;render();const el=$('sec-'+id);if(el)el.scrollIntoView({block:'start'});}
+document.addEventListener('toggle',e=>{const d=e.target;if(d.matches&&d.matches('details[data-sec]')){S.open[d.dataset.sec]=d.open;save();}},true);
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button');if(!t)return;const dk=t.dataset;
+  if(t.id==='tab-y9'||t.id==='tab-y12'){S.cohort=t.id.slice(4);render();}
+  else if(dk.proddel){const c=dk.proddel,l=prods(c).slice();l.splice(+dk.i,1);setProds(c,l);render();}
+  else if(dk.prodadd){const c=dk.prodadd,v=$('addp-'+c).value.trim();if(!v)return;setProds(c,prods(c).concat([v]));render();}
+  else if(dk.cmod!==undefined){CEDIT=+dk.cmod;render();}
+  else if(dk.ccancel){CEDIT=null;render();}
+  else if(dk.csave!==undefined){const l=crits();const v=[0,1,2].map(n=>$('ce-'+n).value.trim());if(!v[0])return;l[+dk.csave]=v;S.criteria=l;CEDIT=null;render();}
+  else if(dk.cdel!==undefined){const l=crits();l.splice(+dk.cdel,1);S.criteria=l;CEDIT=null;render();}
+  else if(dk.cadd){const v=[0,1,2].map(n=>$('ca-'+n).value.trim());if(!v[0])return;S.criteria=crits().concat([v]);render();}
+  else if(dk.addws){const n=dk.addws;if(!allSecs().some(s=>s.name.toLowerCase()===n.toLowerCase())){const id='c'+Date.now();S.customSecs.push({id,own:1,group:'Subjects',name:n,q:PROJ.one.newq[n]||'Add the first idea below.',opts:[]});}render();}
+  else if(['tabbtn-main','tabbtn-sofar','tabbtn-overview','tabbtn-py9','tabbtn-py12','tabbtn-one'].includes(t.id)){S.tab=t.id.slice(7);render();window.scrollTo(0,0);}
+  else if(dk.pick){const p=picks();const v=dk.v;if(p[dk.pick]===v)delete p[dk.pick];else{if(v==='lead'){const sec=allSecs().find(s=>s.id===dk.sec);optsOf(sec).forEach(o=>{if(p[o.id]==='lead')delete p[o.id];});}p[dk.pick]=v;}render();}
+  else if(dk.go)go(dk.go);
+  else if(dk.optx){const o=(S.custom[dk.sec]||[]).find(x=>x.id===dk.oid);if(o&&o.links){o.links[S.cohort]=o.links[S.cohort].filter(x=>x!==dk.optx);render();}}
+  else if(dk.curx){const c=S.cohort,sid=dk.sec,code=dk.curx;const man=S.links[c][sid]||[];if(man.includes(code))S.links[c][sid]=man.filter(x=>x!==code);const sec=allSecs().find(s=>s.id===sid),l=leadOf(sec);if(l&&sug(l).includes(code)){(S.drop[c][sid]=S.drop[c][sid]||[]).push(code);}render();}
+  else if(t.id==='pt-add'){const inp=$('pt-text'),v=inp.value.trim();if(!v){inp.focus();return;}const list=S.curOwn[S.cohort];let n=1;while(list.some(x=>x.code==='X'+n))n++;list.push({code:'X'+n,t:v});inp.value='';render();}
+  else if(dk.delpt){const c=S.cohort,code=dk.delpt;S.curOwn[c]=S.curOwn[c].filter(x=>x.code!==code);Object.keys(S.links[c]).forEach(k=>S.links[c][k]=S.links[c][k].filter(x=>x!==code));Object.values(S.custom).forEach(l=>l.forEach(o=>{if(o.links)o.links[c]=o.links[c].filter(x=>x!==code);}));render();}
+  else if(dk.rmsec){S.hidden[dk.rmsec]=true;render();}
+  else if(dk.restore){delete S.hidden[dk.restore];if(dk.restore!=='sofar')S.open[dk.restore]=true;render();}
+  else if(dk.delsec){if(dk.arm){const id=dk.delsec;(S.custom[id]||[]).forEach(o=>['y9','y12'].forEach(c=>delete S.picks[c][o.id]));delete S.custom[id];['y9','y12'].forEach(c=>delete S.notes[c][id]);delete S.open[id];S.customSecs=S.customSecs.filter(s=>s.id!==id);render();}
+    else{dk.arm='1';t.textContent='Click again to delete';setTimeout(()=>{if(t.isConnected){delete dk.arm;t.textContent='Delete this section';}},3000);}}
+  else if(t.id==='ns-add'){const n=$('ns-name').value.trim();if(!n){$('ns-msg').textContent='Type a section name first.';$('ns-name').focus();return;}
+    $('ns-msg').textContent='';const id='c'+Date.now();S.customSecs.push({id,own:1,group:$('ns-group').value,name:n,q:$('ns-q').value.trim()||'Add the first idea below.',opts:[]});$('ns-name').value='';$('ns-q').value='';go(id);}
+  else if(dk.add){const a=$('add-t-'+dk.add),b=$('add-d-'+dk.add);const name=a.value.trim();if(!name){a.focus();return;}const pick=$('add-c-'+dk.add),links={y9:[],y12:[]};if(pick&&pick.value)links[S.cohort].push(pick.value);(S.custom[dk.add]=S.custom[dk.add]||[]).push({id:'u'+Date.now(),t:name,d:b.value.trim(),own:1,links});render();}
+  else if(dk.delopt){S.deleted[dk.delopt]=true;render();}
+  else if(dk.undel){delete S.deleted[dk.undel];render();}
+  else if(dk.move!==undefined){const r=S.sched[S.cohort].rows,i=Number(dk.move),j=i+Number(dk.d);if(j<0||j>=r.length)return;[r[i],r[j]]=[r[j],r[i]];render();}
+  else if(dk.rm!==undefined){S.sched[S.cohort].rows.splice(Number(dk.rm),1);render();}
+  else if(t.id==='addrow'){S.sched[S.cohort].rows.push({m:15,a:'New activity',w:'',k:'t'});render();}
+  else if(t.id==='addidea'){S.ideas.push({id:'i'+Date.now(),t:'',who:''});S.open.ideas=true;render();}
+  else if(dk.delidea!==undefined){S.ideas.splice(Number(dk.delidea),1);render();}
+  else if(t.id==='openall'||t.id==='closeall'){const v=t.id==='openall';allSecs().forEach(s=>S.open[s.id]=v);S.open.sched=v;S.open.ideas=v;render();}
+  else if(t.id==='copy')copySummary(t);
+  else if(t.id==='save')saveFile();
+  else if(t.id==='saveas')saveAs();
+  else if(t.id==='print')window.print();
+  else if(t.id==='reset'){if(dk.arm){const id=S.docId;S=fresh();S.docId=id;render();}else{dk.arm='1';t.textContent='Click again to confirm';setTimeout(()=>{delete dk.arm;t.textContent='Reset everything';},3000);}}
+});
+document.addEventListener('input',e=>{const t=e.target,dk=t.dataset;
+  if(dk.prod!==undefined){const c=dk.prod,l=prods(c).slice();const v=t.value.trim();if(v){l[+dk.i]=v;setProds(c,l);save();}}
+  else if(dk.tabnote!==undefined){(S.tabNotes=S.tabNotes||{})[dk.tabnote]=t.value;save();}
+  else if(dk.note!==undefined){notes()[dk.note]=t.value;save();}
+  else if(dk.idea!==undefined){S.ideas[Number(dk.idea)][dk.f]=t.value;save();}
+});
+document.addEventListener('change',e=>{const t=e.target,dk=t.dataset;const c=S.sched[S.cohort];
+  if(t.id==='ov-year'){S.cohort=t.value;render();}
+  else if(t.id==='ov-sub'){OV_SUB=t.value;render();}
+  else if(dk.optadd!==undefined){const code=t.value;if(!code)return;const o=(S.custom[dk.sec]||[]).find(x=>x.id===dk.optadd);if(!o)return;o.links=o.links||{y9:[],y12:[]};if(!o.links[S.cohort].includes(code))o.links[S.cohort].push(code);const co=S.cohort;S.drop[co][dk.sec]=(S.drop[co][dk.sec]||[]).filter(x=>x!==code);render();}
+  else if(dk.curadd!==undefined){const code=t.value;if(!code)return;const co=S.cohort,sid=dk.curadd;S.drop[co][sid]=(S.drop[co][sid]||[]).filter(x=>x!==code);(S.links[co][sid]=S.links[co][sid]||[]);if(!S.links[co][sid].includes(code))S.links[co][sid].push(code);render();}
+  else if(t.id==='tpl'){c.tpl=t.value;c.rows=tplRows(S.cohort,t.value);render();}
+  else if(t.id==='st'||t.id==='en'){if(t.value){c[t.id==='st'?'start':'end']=t.value;render();}}
+  else if(dk.row!==undefined){c.rows[Number(dk.row)][dk.f]=dk.f==='m'?Math.max(0,Number(t.value)||0):t.value;render();}
+  else if(dk.calc){S.calc[S.cohort][dk.calc]=Math.max(1,Number(t.value)||1);render();}
+});
+function summaryText(){
+  const L=[`Flood Day brief so far: ${cname()}`,''];
+  shown().forEach(s=>{const l=leadOf(s),m=maybesOf(s),n=notes()[s.id];L.push(s.name.toUpperCase());L.push('Lead: '+(l?l.t+(l.d?' - '+l.d:''):'Open'));if(m.length)L.push('Also considering: '+m.map(x=>x.t).join('; '));if(hasCur(s)){const idx=curIdx(),e=effective(s);if(e.length)L.push('School curriculum: '+e.map(x=>x+' '+idx[x].t).join('; '));}if(n)L.push('Notes: '+n);L.push('');});
+  if(!S.hidden.sched){const c=S.sched[S.cohort];L.push('ACTIVITY SCHEDULE');let t=toMin(c.start);c.rows.forEach(r=>{L.push(`${toT(t)}  ${r.a}${r.w?' ('+r.w+')':''}, ${r.m} min`);t+=Number(r.m)||0;});L.push(`Ends ${toT(t)}`);if(notes().sched)L.push('Notes: '+notes().sched);}
+  if(!S.hidden.ideas&&S.ideas.some(x=>x.t)){L.push('','IDEAS TO EXPLORE');S.ideas.filter(x=>x.t).forEach(x=>L.push('- '+x.t+(x.who?' ('+x.who+')':'')));}
+  return L.join('\n');
+}
+function copySummary(btn){const text=summaryText(),out=$('out');out.hidden=false;out.value=text;out.select();
+  const done=m=>{btn.textContent=m;setTimeout(()=>btn.textContent='Copy summary',2000);};
+  try{navigator.clipboard.writeText(text).then(()=>done('Copied'),()=>done('Select the text below'));}catch(e){done('Select the text below');}}
+window.addEventListener('beforeprint',()=>document.querySelectorAll('textarea').forEach(x=>{x.style.height=x.scrollHeight+'px';}));
+window.addEventListener('afterprint',()=>document.querySelectorAll('textarea').forEach(x=>{x.style.height='';}));
+if(HOSTED){['save','saveas','print'].forEach(i=>document.getElementById(i).hidden=true);document.getElementById('savestate').textContent='Save and Print work in the downloaded HTML file';}
+render();
+cleanSnap=snap();showDirty();
+</script>
+</body>
+</html>
